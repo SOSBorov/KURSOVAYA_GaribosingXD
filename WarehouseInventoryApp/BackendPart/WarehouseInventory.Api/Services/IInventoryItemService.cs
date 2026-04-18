@@ -4,13 +4,18 @@ namespace WarehouseInventory.Api.Services;
 
 public interface IInventoryItemService
 {
-    IReadOnlyCollection<InventoryItemResponse> GetAll();
+    Task<IReadOnlyCollection<InventoryItemResponse>> GetAllAsync(CancellationToken cancellationToken = default);
 
-    InventoryItemResponse? GetById(Guid id);
+    Task<InventoryItemResponse?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default);
 
-    InventoryItemResponse Create(CreateInventoryItemRequest request);
+    Task<InventoryItemResponse> CreateAsync(
+        CreateInventoryItemRequest request,
+        CancellationToken cancellationToken = default);
 
-    InventoryItemResponse? Update(Guid id, UpdateInventoryItemRequest request);
+    Task<InventoryItemResponse?> UpdateAsync(
+        Guid id,
+        UpdateInventoryItemRequest request,
+        CancellationToken cancellationToken = default);
 
-    bool Delete(Guid id);
+    Task<bool> DeleteAsync(Guid id, CancellationToken cancellationToken = default);
 }

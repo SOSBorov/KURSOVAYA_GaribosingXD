@@ -2,7 +2,7 @@ namespace WarehouseInventory.Api.Models;
 
 public sealed class InventoryItem
 {
-    public Guid Id { get; init; }
+    public Guid Id { get; set; }
 
     public string Name { get; set; } = string.Empty;
 

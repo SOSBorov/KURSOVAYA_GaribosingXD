@@ -10,26 +10,28 @@ public sealed class InventoryItemsController(IInventoryItemService inventoryItem
 {
     [HttpGet]
     [ProducesResponseType(StatusCodes.Status200OK)]
-    public ActionResult<IReadOnlyCollection<InventoryItemResponse>> GetAll()
+    public async Task<ActionResult<IReadOnlyCollection<InventoryItemResponse>>> GetAll(CancellationToken cancellationToken)
     {
-        return Ok(inventoryItemService.GetAll());
+        return Ok(await inventoryItemService.GetAllAsync(cancellationToken));
     }
 
     [HttpGet("{id:guid}")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public ActionResult<InventoryItemResponse> GetById(Guid id)
+    public async Task<ActionResult<InventoryItemResponse>> GetById(Guid id, CancellationToken cancellationToken)
     {
-        var item = inventoryItemService.GetById(id);
+        var item = await inventoryItemService.GetByIdAsync(id, cancellationToken);
         return item is null ? NotFound() : Ok(item);
     }
 
     [HttpPost]
     [ProducesResponseType(StatusCodes.Status201Created)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    public ActionResult<InventoryItemResponse> Create(CreateInventoryItemRequest request)
+    public async Task<ActionResult<InventoryItemResponse>> Create(
+        CreateInventoryItemRequest request,
+        CancellationToken cancellationToken)
     {
-        var createdItem = inventoryItemService.Create(request);
+        var createdItem = await inventoryItemService.CreateAsync(request, cancellationToken);
         return CreatedAtAction(nameof(GetById), new { id = createdItem.Id }, createdItem);
     }
 
@@ -37,17 +39,20 @@ public sealed class InventoryItemsController(IInventoryItemService inventoryItem
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    public ActionResult<InventoryItemResponse> Update(Guid id, UpdateInventoryItemRequest request)
+    public async Task<ActionResult<InventoryItemResponse>> Update(
+        Guid id,
+        UpdateInventoryItemRequest request,
+        CancellationToken cancellationToken)
     {
-        var updatedItem = inventoryItemService.Update(id, request);
+        var updatedItem = await inventoryItemService.UpdateAsync(id, request, cancellationToken);
         return updatedItem is null ? NotFound() : Ok(updatedItem);
     }
 
     [HttpDelete("{id:guid}")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public IActionResult Delete(Guid id)
+    public async Task<IActionResult> Delete(Guid id, CancellationToken cancellationToken)
     {
-        return inventoryItemService.Delete(id) ? NoContent() : NotFound();
+        return await inventoryItemService.DeleteAsync(id, cancellationToken) ? NoContent() : NotFound();
     }
 }
