@@ -8,7 +8,9 @@ namespace WarehouseInventory.Api.Controllers;
 [ApiController]
 [Authorize]
 [Route("api/inventory-items")]
-public sealed class InventoryItemsController(IInventoryItemService inventoryItemService) : ControllerBase
+public sealed class InventoryItemsController(
+    IInventoryItemService inventoryItemService,
+    IInventoryItemFileService inventoryItemFileService) : ControllerBase
 {
     /// <summary>
     /// Returns all inventory items available in the warehouse.
@@ -120,6 +122,72 @@ public sealed class InventoryItemsController(IInventoryItemService inventoryItem
                 StatusCodes.Status404NotFound,
                 "Товар не найден",
                 $"Позиция с идентификатором '{id}' отсутствует."));
+    }
+
+    /// <summary>
+    /// Uploads a file for the selected inventory item.
+    /// </summary>
+    /// <param name="id">Inventory item identifier.</param>
+    /// <param name="request">Multipart form-data request containing the file.</param>
+    /// <param name="cancellationToken">Request cancellation token.</param>
+    [HttpPost("{id:guid}/files")]
+    [Consumes("multipart/form-data")]
+    [ProducesResponseType(typeof(InventoryItemFileResponse), StatusCodes.Status201Created)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
+    public async Task<ActionResult<InventoryItemFileResponse>> UploadFile(
+        Guid id,
+        [FromForm] UploadInventoryItemFileRequest request,
+        CancellationToken cancellationToken)
+    {
+        var result = await inventoryItemFileService.UploadAsync(id, request.File, cancellationToken);
+        if (!result.Succeeded)
+        {
+            return StatusCode(
+                result.StatusCode,
+                CreateProblemDetails(result.StatusCode, "Ошибка загрузки файла", result.Message));
+        }
+
+        return CreatedAtRoute(
+            "DownloadInventoryItemFile",
+            new { id, fileId = result.File!.Id },
+            result.File);
+    }
+
+    /// <summary>
+    /// Returns metadata of files uploaded for the selected inventory item.
+    /// </summary>
+    /// <param name="id">Inventory item identifier.</param>
+    /// <param name="cancellationToken">Request cancellation token.</param>
+    [HttpGet("{id:guid}/files")]
+    [ProducesResponseType(typeof(IReadOnlyCollection<InventoryItemFileResponse>), StatusCodes.Status200OK)]
+    public async Task<ActionResult<IReadOnlyCollection<InventoryItemFileResponse>>> GetFiles(
+        Guid id,
+        CancellationToken cancellationToken)
+    {
+        return Ok(await inventoryItemFileService.GetFilesAsync(id, cancellationToken));
+    }
+
+    /// <summary>
+    /// Downloads a file attached to the selected inventory item.
+    /// </summary>
+    /// <param name="id">Inventory item identifier.</param>
+    /// <param name="fileId">Uploaded file identifier.</param>
+    /// <param name="cancellationToken">Request cancellation token.</param>
+    [HttpGet("{id:guid}/files/{fileId:guid}", Name = "DownloadInventoryItemFile")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> DownloadFile(Guid id, Guid fileId, CancellationToken cancellationToken)
+    {
+        var result = await inventoryItemFileService.DownloadAsync(id, fileId, cancellationToken);
+        if (!result.Succeeded)
+        {
+            return StatusCode(
+                result.StatusCode,
+                CreateProblemDetails(result.StatusCode, "Ошибка скачивания файла", result.Message));
+        }
+
+        return PhysicalFile(result.FilePath, result.ContentType, result.FileName);
     }
 
     private ProblemDetails CreateProblemDetails(int statusCode, string title, string detail)

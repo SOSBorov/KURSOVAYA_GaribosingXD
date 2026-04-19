@@ -6,11 +6,13 @@ namespace WarehouseInventory.Api.Data;
 public sealed class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : DbContext(options)
 {
     public DbSet<InventoryItem> InventoryItems => Set<InventoryItem>();
+    public DbSet<InventoryItemFile> InventoryItemFiles => Set<InventoryItemFile>();
     public DbSet<ApplicationUser> Users => Set<ApplicationUser>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         var inventoryItem = modelBuilder.Entity<InventoryItem>();
+        var inventoryItemFile = modelBuilder.Entity<InventoryItemFile>();
         var user = modelBuilder.Entity<ApplicationUser>();
 
         inventoryItem.ToTable("InventoryItems");
@@ -22,6 +24,16 @@ public sealed class ApplicationDbContext(DbContextOptions<ApplicationDbContext> 
         inventoryItem.Property(item => item.UnitOfMeasure).IsRequired().HasMaxLength(20);
         inventoryItem.Property(item => item.WarehouseLocation).IsRequired().HasMaxLength(80);
         inventoryItem.Property(item => item.UnitPrice).HasPrecision(18, 2);
+
+        inventoryItemFile.ToTable("InventoryItemFiles");
+        inventoryItemFile.HasKey(file => file.Id);
+        inventoryItemFile.Property(file => file.OriginalFileName).IsRequired().HasMaxLength(255);
+        inventoryItemFile.Property(file => file.StoredFileName).IsRequired().HasMaxLength(255);
+        inventoryItemFile.Property(file => file.ContentType).IsRequired().HasMaxLength(100);
+        inventoryItemFile.HasOne(file => file.InventoryItem)
+            .WithMany(item => item.Files)
+            .HasForeignKey(file => file.InventoryItemId)
+            .OnDelete(DeleteBehavior.Cascade);
 
         user.ToTable("Users");
         user.HasKey(currentUser => currentUser.Id);

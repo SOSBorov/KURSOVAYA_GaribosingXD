@@ -19,4 +19,6 @@ public sealed class InventoryItem
     public string WarehouseLocation { get; set; } = string.Empty;
 
     public DateTime LastUpdatedUtc { get; set; }
+
+    public ICollection<InventoryItemFile> Files { get; set; } = [];
 }
