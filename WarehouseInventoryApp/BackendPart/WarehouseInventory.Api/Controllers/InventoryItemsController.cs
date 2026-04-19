@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using WarehouseInventory.Api.Dtos;
 using WarehouseInventory.Api.Services;
@@ -5,6 +6,7 @@ using WarehouseInventory.Api.Services;
 namespace WarehouseInventory.Api.Controllers;
 
 [ApiController]
+[Authorize]
 [Route("api/inventory-items")]
 public sealed class InventoryItemsController(IInventoryItemService inventoryItemService) : ControllerBase
 {
