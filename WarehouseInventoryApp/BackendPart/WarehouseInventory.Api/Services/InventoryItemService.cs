@@ -47,15 +47,26 @@ public sealed class InventoryItemService(ApplicationDbContext dbContext) : IInve
             .FirstOrDefaultAsync(cancellationToken);
     }
 
-    public async Task<InventoryItemResponse> CreateAsync(
+    public async Task<InventoryItemOperationResult> CreateAsync(
         CreateInventoryItemRequest request,
         CancellationToken cancellationToken = default)
     {
+        var normalizedSku = request.Sku.Trim().ToUpperInvariant();
+        var duplicateSkuExists = await dbContext.InventoryItems
+            .AnyAsync(item => item.Sku == normalizedSku, cancellationToken);
+
+        if (duplicateSkuExists)
+        {
+            return InventoryItemOperationResult.Failure(
+                InventoryOperationError.DuplicateSku,
+                "Товар с таким SKU уже существует.");
+        }
+
         var item = new InventoryItem
         {
             Id = Guid.NewGuid(),
             Name = request.Name.Trim(),
-            Sku = request.Sku.Trim().ToUpperInvariant(),
+            Sku = normalizedSku,
             Category = request.Category.Trim(),
             UnitOfMeasure = request.UnitOfMeasure.Trim(),
             QuantityInStock = request.QuantityInStock,
@@ -67,10 +78,10 @@ public sealed class InventoryItemService(ApplicationDbContext dbContext) : IInve
         dbContext.InventoryItems.Add(item);
         await dbContext.SaveChangesAsync(cancellationToken);
 
-        return MapToResponse(item);
+        return InventoryItemOperationResult.Success(MapToResponse(item));
     }
 
-    public async Task<InventoryItemResponse?> UpdateAsync(
+    public async Task<InventoryItemOperationResult> UpdateAsync(
         Guid id,
         UpdateInventoryItemRequest request,
         CancellationToken cancellationToken = default)
@@ -81,11 +92,24 @@ public sealed class InventoryItemService(ApplicationDbContext dbContext) : IInve
 
         if (item is null)
         {
-            return null;
+            return InventoryItemOperationResult.Failure(
+                InventoryOperationError.NotFound,
+                "Товар не найден.");
+        }
+
+        var normalizedSku = request.Sku.Trim().ToUpperInvariant();
+        var duplicateSkuExists = await dbContext.InventoryItems
+            .AnyAsync(currentItem => currentItem.Id != id && currentItem.Sku == normalizedSku, cancellationToken);
+
+        if (duplicateSkuExists)
+        {
+            return InventoryItemOperationResult.Failure(
+                InventoryOperationError.DuplicateSku,
+                "Товар с таким SKU уже существует.");
         }
 
         item.Name = request.Name.Trim();
-        item.Sku = request.Sku.Trim().ToUpperInvariant();
+        item.Sku = normalizedSku;
         item.Category = request.Category.Trim();
         item.UnitOfMeasure = request.UnitOfMeasure.Trim();
         item.QuantityInStock = request.QuantityInStock;
@@ -95,7 +119,7 @@ public sealed class InventoryItemService(ApplicationDbContext dbContext) : IInve
 
         await dbContext.SaveChangesAsync(cancellationToken);
 
-        return MapToResponse(item);
+        return InventoryItemOperationResult.Success(MapToResponse(item));
     }
 
     public async Task<bool> DeleteAsync(Guid id, CancellationToken cancellationToken = default)

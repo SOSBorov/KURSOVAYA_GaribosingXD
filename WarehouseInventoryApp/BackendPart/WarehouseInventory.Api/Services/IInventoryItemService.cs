@@ -8,11 +8,11 @@ public interface IInventoryItemService
 
     Task<InventoryItemResponse?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default);
 
-    Task<InventoryItemResponse> CreateAsync(
+    Task<InventoryItemOperationResult> CreateAsync(
         CreateInventoryItemRequest request,
         CancellationToken cancellationToken = default);
 
-    Task<InventoryItemResponse?> UpdateAsync(
+    Task<InventoryItemOperationResult> UpdateAsync(
         Guid id,
         UpdateInventoryItemRequest request,
         CancellationToken cancellationToken = default);
