@@ -10,9 +10,15 @@ namespace WarehouseInventory.Api.Controllers;
 [AllowAnonymous]
 public sealed class AuthController(IAuthService authService) : ControllerBase
 {
+    /// <summary>
+    /// Registers a new user and returns a JWT token for authorized requests.
+    /// </summary>
+    /// <param name="request">User registration data.</param>
+    /// <param name="cancellationToken">Request cancellation token.</param>
+    /// <returns>JWT token and basic user information.</returns>
     [HttpPost("register")]
-    [ProducesResponseType(StatusCodes.Status200OK)]
-    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(typeof(AuthResponse), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
     public async Task<ActionResult<AuthResponse>> Register(
         RegisterRequest request,
         CancellationToken cancellationToken)
@@ -26,9 +32,15 @@ public sealed class AuthController(IAuthService authService) : ControllerBase
         return Ok(result.Response);
     }
 
+    /// <summary>
+    /// Authenticates an existing user and returns a JWT token.
+    /// </summary>
+    /// <param name="request">User login credentials.</param>
+    /// <param name="cancellationToken">Request cancellation token.</param>
+    /// <returns>JWT token and basic user information.</returns>
     [HttpPost("login")]
-    [ProducesResponseType(StatusCodes.Status200OK)]
-    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(typeof(AuthResponse), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status401Unauthorized)]
     public async Task<ActionResult<AuthResponse>> Login(
         LoginRequest request,
         CancellationToken cancellationToken)

@@ -10,6 +10,10 @@ namespace WarehouseInventory.Api.Controllers;
 [Route("api/inventory-items")]
 public sealed class InventoryItemsController(IInventoryItemService inventoryItemService) : ControllerBase
 {
+    /// <summary>
+    /// Returns all inventory items available in the warehouse.
+    /// </summary>
+    /// <param name="cancellationToken">Request cancellation token.</param>
     [HttpGet]
     [ProducesResponseType(typeof(IReadOnlyCollection<InventoryItemResponse>), StatusCodes.Status200OK)]
     public async Task<ActionResult<IReadOnlyCollection<InventoryItemResponse>>> GetAll(CancellationToken cancellationToken)
@@ -17,6 +21,11 @@ public sealed class InventoryItemsController(IInventoryItemService inventoryItem
         return Ok(await inventoryItemService.GetAllAsync(cancellationToken));
     }
 
+    /// <summary>
+    /// Returns one inventory item by its identifier.
+    /// </summary>
+    /// <param name="id">Inventory item identifier.</param>
+    /// <param name="cancellationToken">Request cancellation token.</param>
     [HttpGet("{id:guid}", Name = "GetInventoryItemById")]
     [ProducesResponseType(typeof(InventoryItemResponse), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
@@ -31,6 +40,11 @@ public sealed class InventoryItemsController(IInventoryItemService inventoryItem
             : Ok(item);
     }
 
+    /// <summary>
+    /// Creates a new inventory item.
+    /// </summary>
+    /// <param name="request">Inventory item data for creation.</param>
+    /// <param name="cancellationToken">Request cancellation token.</param>
     [HttpPost]
     [ProducesResponseType(typeof(InventoryItemResponse), StatusCodes.Status201Created)]
     [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
@@ -51,6 +65,12 @@ public sealed class InventoryItemsController(IInventoryItemService inventoryItem
         return CreatedAtRoute("GetInventoryItemById", new { id = result.Item!.Id }, result.Item);
     }
 
+    /// <summary>
+    /// Updates an existing inventory item by identifier.
+    /// </summary>
+    /// <param name="id">Inventory item identifier.</param>
+    /// <param name="request">Updated inventory item data.</param>
+    /// <param name="cancellationToken">Request cancellation token.</param>
     [HttpPut("{id:guid}")]
     [ProducesResponseType(typeof(InventoryItemResponse), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
@@ -84,6 +104,11 @@ public sealed class InventoryItemsController(IInventoryItemService inventoryItem
         };
     }
 
+    /// <summary>
+    /// Deletes an inventory item by identifier.
+    /// </summary>
+    /// <param name="id">Inventory item identifier.</param>
+    /// <param name="cancellationToken">Request cancellation token.</param>
     [HttpDelete("{id:guid}")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
