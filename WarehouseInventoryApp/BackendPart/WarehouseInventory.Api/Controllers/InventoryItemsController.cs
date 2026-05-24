@@ -13,14 +13,17 @@ public sealed class InventoryItemsController(
     IInventoryItemFileService inventoryItemFileService) : ControllerBase
 {
     /// <summary>
-    /// Returns all inventory items available in the warehouse.
+    /// Returns inventory items available in the warehouse with pagination and filters.
     /// </summary>
+    /// <param name="request">Pagination and filter parameters.</param>
     /// <param name="cancellationToken">Request cancellation token.</param>
     [HttpGet]
-    [ProducesResponseType(typeof(IReadOnlyCollection<InventoryItemResponse>), StatusCodes.Status200OK)]
-    public async Task<ActionResult<IReadOnlyCollection<InventoryItemResponse>>> GetAll(CancellationToken cancellationToken)
+    [ProducesResponseType(typeof(PagedResponse<InventoryItemResponse>), StatusCodes.Status200OK)]
+    public async Task<ActionResult<PagedResponse<InventoryItemResponse>>> GetAll(
+        [FromQuery] InventoryItemsQueryRequest request,
+        CancellationToken cancellationToken)
     {
-        return Ok(await inventoryItemService.GetAllAsync(cancellationToken));
+        return Ok(await inventoryItemService.GetAllAsync(request, cancellationToken));
     }
 
     /// <summary>

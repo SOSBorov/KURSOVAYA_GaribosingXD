@@ -4,7 +4,9 @@ namespace WarehouseInventory.Api.Services;
 
 public interface IInventoryItemService
 {
-    Task<IReadOnlyCollection<InventoryItemResponse>> GetAllAsync(CancellationToken cancellationToken = default);
+    Task<PagedResponse<InventoryItemResponse>> GetAllAsync(
+        InventoryItemsQueryRequest request,
+        CancellationToken cancellationToken = default);
 
     Task<InventoryItemResponse?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default);
 

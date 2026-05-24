@@ -7,11 +7,46 @@ namespace WarehouseInventory.Api.Services;
 
 public sealed class InventoryItemService(ApplicationDbContext dbContext) : IInventoryItemService
 {
-    public async Task<IReadOnlyCollection<InventoryItemResponse>> GetAllAsync(CancellationToken cancellationToken = default)
+    public async Task<PagedResponse<InventoryItemResponse>> GetAllAsync(
+        InventoryItemsQueryRequest request,
+        CancellationToken cancellationToken = default)
     {
-        return await dbContext.InventoryItems
+        var query = dbContext.InventoryItems
             .AsNoTracking()
+            .AsQueryable();
+
+        if (!string.IsNullOrWhiteSpace(request.Search))
+        {
+            var normalizedSearch = request.Search.Trim();
+            var searchPattern = $"%{normalizedSearch}%";
+
+            query = query.Where(item =>
+                EF.Functions.Like(item.Name, searchPattern) ||
+                EF.Functions.Like(item.Sku, searchPattern) ||
+                EF.Functions.Like(item.Category, searchPattern) ||
+                EF.Functions.Like(item.WarehouseLocation, searchPattern));
+        }
+
+        if (!string.IsNullOrWhiteSpace(request.Category))
+        {
+            var normalizedCategory = request.Category.Trim();
+            query = query.Where(item => item.Category == normalizedCategory);
+        }
+
+        if (!string.IsNullOrWhiteSpace(request.WarehouseLocation))
+        {
+            var normalizedLocation = request.WarehouseLocation.Trim().ToUpperInvariant();
+            query = query.Where(item => item.WarehouseLocation == normalizedLocation);
+        }
+
+        var page = request.NormalizedPage;
+        var pageSize = request.NormalizedPageSize;
+        var totalCount = await query.CountAsync(cancellationToken);
+
+        var items = await query
             .OrderBy(item => item.Name)
+            .Skip((page - 1) * pageSize)
+            .Take(pageSize)
             .Select(item => new InventoryItemResponse
             {
                 Id = item.Id,
@@ -25,6 +60,14 @@ public sealed class InventoryItemService(ApplicationDbContext dbContext) : IInve
                 LastUpdatedUtc = item.LastUpdatedUtc
             })
             .ToArrayAsync(cancellationToken);
+
+        return new PagedResponse<InventoryItemResponse>
+        {
+            Items = items,
+            Page = page,
+            PageSize = pageSize,
+            TotalCount = totalCount
+        };
     }
 
     public async Task<InventoryItemResponse?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default)
