@@ -13,65 +13,72 @@
         </Grid.RowDefinitions>
 
         <StackPanel>
-            <TextBlock FontSize="32"
-                       FontWeight="Bold"
-                       Text="{Binding Header}" />
-            <TextBlock Margin="0,8,0,0"
-                       FontSize="15"
-                       Foreground="#667085"
-                       TextWrapping="Wrap"
-                       Text="{Binding Description}" />
+            <TextBlock FontSize="32" FontWeight="Bold" Text="{Binding Header}" />
+            <TextBlock Margin="0,8,0,0" FontSize="15" Foreground="#667085" TextWrapping="Wrap" Text="{Binding Description}" />
         </StackPanel>
 
-        <Grid Grid.Row="1"
-              Margin="0,28,0,0">
+        <Grid Grid.Row="1" Margin="0,28,0,0">
             <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="1.18*" />
-                <ColumnDefinition Width="0.98*" />
+                <ColumnDefinition Width="1.15*" />
+                <ColumnDefinition Width="0.95*" />
             </Grid.ColumnDefinitions>
 
-            <Border Margin="0,0,24,0"
-                    Padding="22"
-                    CornerRadius="26"
-                    Background="#FFFFFF">
+            <Border Margin="0,0,24,0" Padding="22" CornerRadius="26" Background="#FFFFFF">
                 <Grid>
                     <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
                         <RowDefinition Height="Auto" />
                         <RowDefinition Height="*" />
                     </Grid.RowDefinitions>
 
-                    <DockPanel LastChildFill="False">
-                        <StackPanel DockPanel.Dock="Left">
-                            <TextBlock FontSize="24"
-                                       FontWeight="SemiBold"
-                                       Text="Реестр товаров" />
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="Auto" />
+                        </Grid.ColumnDefinitions>
+
+                        <StackPanel>
+                            <TextBlock FontSize="24" FontWeight="SemiBold" Text="Реестр товаров" />
                             <TextBlock Margin="0,6,0,0"
                                        FontSize="13"
                                        Foreground="#667085"
-                                       Text="Список приходит с сервера и обновляется через CRUD-запросы." />
+                                       TextWrapping="Wrap"
+                                       Text="Здесь можно добавить товар вручную или импортировать его из файла CSV." />
                         </StackPanel>
 
-                        <StackPanel DockPanel.Dock="Right"
-                                    Orientation="Horizontal">
-                            <Border Margin="0,0,12,0"
-                                    Padding="14,8"
-                                    CornerRadius="14"
-                                    Background="#F5F7FB">
-                                <TextBlock FontSize="13"
-                                           Foreground="#667085"
-                                           Text="{Binding AccessBadge}" />
+                        <WrapPanel Grid.Column="1"
+                                   HorizontalAlignment="Right"
+                                   VerticalAlignment="Top"
+                                   ItemHeight="40">
+                            <Border Margin="0,0,10,10" Padding="12,8" CornerRadius="14" Background="#F5F7FB">
+                                <TextBlock FontSize="13" Foreground="#667085" Text="{Binding AccessBadge}" />
                             </Border>
-
-                            <Button MinWidth="120"
-                                    Padding="18,10"
+                            <Button Width="110"
+                                    Height="40"
+                                    Margin="0,0,10,10"
+                                    Padding="12,8"
                                     Background="#EAF0FF"
                                     BorderThickness="0"
                                     Command="{Binding LoadProductsCommand}"
                                     Content="Обновить" />
-                        </StackPanel>
-                    </DockPanel>
+                            <Button Width="120"
+                                    Height="40"
+                                    Margin="0,0,0,10"
+                                    Padding="12,8"
+                                    Background="#DFF7E6"
+                                    BorderThickness="0"
+                                    Command="{Binding ImportProductsCommand}"
+                                    Content="Импорт CSV" />
+                        </WrapPanel>
+                    </Grid>
 
-                    <DataGrid Grid.Row="1"
+                    <Border Grid.Row="1" Margin="0,16,0,0" Padding="14" CornerRadius="16" Background="#F7F9FD">
+                        <TextBlock Foreground="#3756CE"
+                                   TextWrapping="Wrap"
+                                   Text="Ручное добавление: заполните поля справа и нажмите «Добавить». Импорт: нажмите «Импорт CSV» и выберите файл." />
+                    </Border>
+
+                    <DataGrid Grid.Row="2"
                               Margin="0,18,0,0"
                               AutoGenerateColumns="False"
                               CanUserAddRows="False"
@@ -83,52 +90,29 @@
                               AlternatingRowBackground="#F7F9FD"
                               BorderThickness="0">
                         <DataGrid.Columns>
-                            <DataGridTextColumn Header="Название"
-                                                Width="2*"
-                                                Binding="{Binding Name}" />
-                            <DataGridTextColumn Header="SKU"
-                                                Width="1.2*"
-                                                Binding="{Binding Sku}" />
-                            <DataGridTextColumn Header="Категория"
-                                                Width="1.4*"
-                                                Binding="{Binding Category}" />
-                            <DataGridTextColumn Header="Ед."
-                                                Width="0.8*"
-                                                Binding="{Binding Unit}" />
-                            <DataGridTextColumn Header="Кол-во"
-                                                Width="0.9*"
-                                                Binding="{Binding Quantity}" />
-                            <DataGridTextColumn Header="Цена"
-                                                Width="1*"
-                                                Binding="{Binding UnitPrice, StringFormat={}{0:0.##}}" />
-                            <DataGridTextColumn Header="Локация"
-                                                Width="1.4*"
-                                                Binding="{Binding WarehouseLocation}" />
+                            <DataGridTextColumn Header="Название" Width="2*" Binding="{Binding Name}" />
+                            <DataGridTextColumn Header="SKU" Width="1.1*" Binding="{Binding Sku}" />
+                            <DataGridTextColumn Header="Категория" Width="1.3*" Binding="{Binding Category}" />
+                            <DataGridTextColumn Header="Ед." Width="0.7*" Binding="{Binding Unit}" />
+                            <DataGridTextColumn Header="Кол-во" Width="0.9*" Binding="{Binding Quantity}" />
+                            <DataGridTextColumn Header="Цена" Width="1*" Binding="{Binding UnitPrice, StringFormat={}{0:0.##}}" />
+                            <DataGridTextColumn Header="Локация" Width="1.3*" Binding="{Binding WarehouseLocation}" />
                         </DataGrid.Columns>
                     </DataGrid>
                 </Grid>
             </Border>
 
-            <Border Grid.Column="1"
-                    Padding="22"
-                    CornerRadius="26"
-                    Background="#FFFFFF">
-                <ScrollViewer VerticalScrollBarVisibility="Auto"
-                              HorizontalScrollBarVisibility="Disabled">
+            <Border Grid.Column="1" Padding="22" CornerRadius="26" Background="#FFFFFF">
+                <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
                     <StackPanel>
-                        <TextBlock FontSize="24"
-                                   FontWeight="SemiBold"
-                                   Text="Карточка товара" />
+                        <TextBlock FontSize="24" FontWeight="SemiBold" Text="Карточка товара" />
                         <TextBlock Margin="0,6,0,0"
                                    FontSize="14"
                                    Foreground="#667085"
                                    TextWrapping="Wrap"
-                                   Text="Создание, обновление и загрузка фото товара в API." />
+                                   Text="Заполните поля для ручного добавления или выберите товар слева, чтобы отредактировать его." />
 
-                        <Border Margin="0,18,0,0"
-                                Padding="16"
-                                CornerRadius="20"
-                                Background="#F7F9FD">
+                        <Border Margin="0,18,0,0" Padding="16" CornerRadius="20" Background="#F7F9FD">
                             <Grid>
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="120" />
@@ -142,10 +126,7 @@
                                         CornerRadius="18"
                                         Background="#E9EDF8">
                                     <Grid>
-                                        <Image Source="{Binding ImagePath}"
-                                               Stretch="UniformToFill"
-                                               HorizontalAlignment="Center"
-                                               VerticalAlignment="Center" />
+                                        <Image Source="{Binding ImagePath}" Stretch="UniformToFill" HorizontalAlignment="Center" VerticalAlignment="Center" />
                                         <TextBlock HorizontalAlignment="Center"
                                                    VerticalAlignment="Center"
                                                    Foreground="#7B869A"
@@ -164,54 +145,34 @@
                                     </Grid>
                                 </Border>
 
-                                <StackPanel Grid.Column="1"
-                                            Margin="16,0,0,0"
-                                            VerticalAlignment="Center">
-                                    <TextBlock FontSize="13"
-                                               Foreground="#667085"
-                                               Text="Фото товара" />
-                                    <TextBlock Margin="0,6,0,0"
-                                               FontSize="18"
-                                               FontWeight="SemiBold"
-                                               TextWrapping="Wrap"
-                                               Text="{Binding ImageLabel}" />
+                                <StackPanel Grid.Column="1" Margin="16,0,0,0" VerticalAlignment="Center">
+                                    <TextBlock FontSize="13" Foreground="#667085" Text="Изображение товара" />
+                                    <TextBlock Margin="0,6,0,0" FontSize="18" FontWeight="SemiBold" TextWrapping="Wrap" Text="{Binding ImageLabel}" />
                                     <Button Margin="0,14,0,0"
-                                            Width="150"
+                                            Width="170"
                                             Height="38"
                                             HorizontalAlignment="Left"
                                             Background="#FFCC00"
                                             BorderThickness="0"
                                             Command="{Binding ChooseImageCommand}"
-                                            Content="Выбрать фото" />
+                                            Content="Выбрать изображение" />
                                 </StackPanel>
                             </Grid>
                         </Border>
 
                         <StackPanel Margin="0,18,0,0">
-                            <TextBlock FontSize="13"
-                                       FontWeight="SemiBold"
-                                       Text="Название" />
-                            <TextBox Margin="0,8,0,0"
-                                     Height="40"
-                                     Text="{Binding ProductName, UpdateSourceTrigger=PropertyChanged}" />
+                            <TextBlock FontSize="13" FontWeight="SemiBold" Text="Название" />
+                            <TextBox Margin="0,8,0,0" Height="40" Text="{Binding ProductName, UpdateSourceTrigger=PropertyChanged}" />
                         </StackPanel>
 
                         <StackPanel Margin="0,18,0,0">
-                            <TextBlock FontSize="13"
-                                       FontWeight="SemiBold"
-                                       Text="Артикул (SKU)" />
-                            <TextBox Margin="0,8,0,0"
-                                     Height="40"
-                                     Text="{Binding Sku, UpdateSourceTrigger=PropertyChanged}" />
+                            <TextBlock FontSize="13" FontWeight="SemiBold" Text="Артикул (SKU)" />
+                            <TextBox Margin="0,8,0,0" Height="40" Text="{Binding Sku, UpdateSourceTrigger=PropertyChanged}" />
                         </StackPanel>
 
                         <StackPanel Margin="0,18,0,0">
-                            <TextBlock FontSize="13"
-                                       FontWeight="SemiBold"
-                                       Text="Категория" />
-                            <TextBox Margin="0,8,0,0"
-                                     Height="40"
-                                     Text="{Binding Category, UpdateSourceTrigger=PropertyChanged}" />
+                            <TextBlock FontSize="13" FontWeight="SemiBold" Text="Категория" />
+                            <TextBox Margin="0,8,0,0" Height="40" Text="{Binding Category, UpdateSourceTrigger=PropertyChanged}" />
                         </StackPanel>
 
                         <Grid Margin="0,18,0,0">
@@ -221,9 +182,7 @@
                             </Grid.ColumnDefinitions>
 
                             <StackPanel Margin="0,0,12,0">
-                                <TextBlock FontSize="13"
-                                           FontWeight="SemiBold"
-                                           Text="Единица измерения" />
+                                <TextBlock FontSize="13" FontWeight="SemiBold" Text="Единица измерения" />
                                 <ComboBox Margin="0,8,0,0"
                                           Height="40"
                                           SelectedValue="{Binding Unit, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
@@ -237,12 +196,8 @@
                             </StackPanel>
 
                             <StackPanel Grid.Column="1">
-                                <TextBlock FontSize="13"
-                                           FontWeight="SemiBold"
-                                           Text="Количество" />
-                                <TextBox Margin="0,8,0,0"
-                                         Height="40"
-                                         Text="{Binding QuantityInput, UpdateSourceTrigger=PropertyChanged}" />
+                                <TextBlock FontSize="13" FontWeight="SemiBold" Text="Количество" />
+                                <TextBox Margin="0,8,0,0" Height="40" Text="{Binding QuantityInput, UpdateSourceTrigger=PropertyChanged}" />
                             </StackPanel>
                         </Grid>
 
@@ -253,65 +208,28 @@
                             </Grid.ColumnDefinitions>
 
                             <StackPanel Margin="0,0,12,0">
-                                <TextBlock FontSize="13"
-                                           FontWeight="SemiBold"
-                                           Text="Цена за единицу" />
-                                <TextBox Margin="0,8,0,0"
-                                         Height="40"
-                                         Text="{Binding UnitPriceInput, UpdateSourceTrigger=PropertyChanged}" />
+                                <TextBlock FontSize="13" FontWeight="SemiBold" Text="Цена за единицу" />
+                                <TextBox Margin="0,8,0,0" Height="40" Text="{Binding UnitPriceInput, UpdateSourceTrigger=PropertyChanged}" />
                             </StackPanel>
 
                             <StackPanel Grid.Column="1">
-                                <TextBlock FontSize="13"
-                                           FontWeight="SemiBold"
-                                           Text="Локация на складе" />
-                                <TextBox Margin="0,8,0,0"
-                                         Height="40"
-                                         Text="{Binding WarehouseLocation, UpdateSourceTrigger=PropertyChanged}" />
+                                <TextBlock FontSize="13" FontWeight="SemiBold" Text="Локация на складе" />
+                                <TextBox Margin="0,8,0,0" Height="40" Text="{Binding WarehouseLocation, UpdateSourceTrigger=PropertyChanged}" />
                             </StackPanel>
                         </Grid>
 
-                        <Border Margin="0,22,0,0"
-                                Padding="14"
-                                CornerRadius="14"
-                                Background="#F6F8FD">
+                        <Border Margin="0,22,0,0" Padding="14" CornerRadius="14" Background="#F6F8FD">
                             <StackPanel>
-                                <TextBlock Foreground="#3756CE"
-                                           TextWrapping="Wrap"
-                                           Text="{Binding StatusMessage}" />
-                                <TextBlock Margin="0,8,0,0"
-                                           Foreground="#667085"
-                                           TextWrapping="Wrap"
-                                           Text="{Binding DeleteAccessText}" />
+                                <TextBlock Foreground="#3756CE" TextWrapping="Wrap" Text="{Binding StatusMessage}" />
+                                <TextBlock Margin="0,8,0,0" Foreground="#667085" TextWrapping="Wrap" Text="{Binding DeleteAccessText}" />
                             </StackPanel>
                         </Border>
 
-                        <UniformGrid Margin="0,22,0,0"
-                                     Rows="2"
-                                     Columns="2">
-                            <Button Margin="0,0,10,10"
-                                    Background="#FFCC00"
-                                    BorderThickness="0"
-                                    Command="{Binding AddProductCommand}"
-                                    Content="Добавить" />
-                            <Button Margin="10,0,0,10"
-                                    Background="#3756CE"
-                                    BorderThickness="0"
-                                    Foreground="White"
-                                    Command="{Binding SaveProductCommand}"
-                                    Content="Сохранить" />
-                            <Button Margin="0,10,10,0"
-                                    Background="#E9EDF8"
-                                    BorderThickness="0"
-                                    Command="{Binding ClearFormCommand}"
-                                    Content="Очистить" />
-                            <Button Margin="10,10,0,0"
-                                    Background="#FDE7E7"
-                                    BorderThickness="0"
-                                    Foreground="#B42318"
-                                    IsEnabled="{Binding CanDeleteProducts}"
-                                    Command="{Binding DeleteProductCommand}"
-                                    Content="Удалить" />
+                        <UniformGrid Margin="0,22,0,0" Rows="2" Columns="2">
+                            <Button Margin="0,0,10,10" Background="#FFCC00" BorderThickness="0" Command="{Binding AddProductCommand}" Content="Добавить" />
+                            <Button Margin="10,0,0,10" Background="#3756CE" BorderThickness="0" Foreground="White" Command="{Binding SaveProductCommand}" Content="Сохранить" />
+                            <Button Margin="0,10,10,0" Background="#E9EDF8" BorderThickness="0" Command="{Binding ClearFormCommand}" Content="Очистить" />
+                            <Button Margin="10,10,0,0" Background="#FDE7E7" BorderThickness="0" Foreground="#B42318" IsEnabled="{Binding CanDeleteProducts}" Command="{Binding DeleteProductCommand}" Content="Удалить" />
                         </UniformGrid>
                     </StackPanel>
                 </ScrollViewer>

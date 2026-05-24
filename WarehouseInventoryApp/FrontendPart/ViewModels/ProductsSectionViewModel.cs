@@ -20,9 +20,10 @@ public sealed class ProductsSectionViewModel : ViewModelBase
     private string _unitPriceInput = "0";
     private string _warehouseLocation = string.Empty;
     private string? _imagePath;
-    private string _statusMessage = "Подключите API и нажмите на товар из списка или создайте новую карточку.";
+    private string _statusMessage = "Во вкладке можно добавить товар вручную или импортировать из файла CSV.";
     private bool _isBusy;
     private bool _imageChanged;
+    private bool _lastAddUsedLocalFallback;
 
     public ProductsSectionViewModel(InventoryAppState state)
     {
@@ -31,29 +32,30 @@ public sealed class ProductsSectionViewModel : ViewModelBase
         if (!string.IsNullOrWhiteSpace(_state.AuthToken))
         {
             _inventoryApiService = new InventoryApiService(_state.AuthToken);
-            _statusMessage = "Загружаю товары из API...";
-        }
-        else
-        {
-            _statusMessage = "API-сессия не найдена. Список товаров работает только после входа через сервер.";
+            _statusMessage = "API-сессия подключена. Можно загружать, добавлять, редактировать и удалять товары.";
         }
 
-        LoadProductsCommand = new AsyncRelayCommand(LoadProductsAsync, () => !IsBusy && _inventoryApiService is not null);
-        AddProductCommand = new AsyncRelayCommand(AddProductAsync, () => !IsBusy && _inventoryApiService is not null);
-        SaveProductCommand = new AsyncRelayCommand(UpdateProductAsync, () => !IsBusy && _inventoryApiService is not null && SelectedProduct is not null);
-        DeleteProductCommand = new AsyncRelayCommand(DeleteProductAsync, () => !IsBusy && _inventoryApiService is not null && CanDeleteProducts && SelectedProduct is not null);
+        LoadProductsCommand = new AsyncRelayCommand(LoadProductsAsync, () => !IsBusy);
+        AddProductCommand = new AsyncRelayCommand(AddProductAsync, () => !IsBusy);
+        SaveProductCommand = new AsyncRelayCommand(UpdateProductAsync, () => !IsBusy && SelectedProduct is not null);
+        DeleteProductCommand = new AsyncRelayCommand(DeleteProductAsync, () => !IsBusy && CanDeleteProducts && SelectedProduct is not null);
         ClearFormCommand = new RelayCommand(ClearForm, () => !IsBusy);
         ChooseImageCommand = new RelayCommand(ChooseImage, () => !IsBusy);
+        ImportProductsCommand = new RelayCommand(ImportProductsFromFile, () => !IsBusy);
 
         if (_inventoryApiService is not null)
         {
             _ = LoadProductsAsync();
         }
+        else
+        {
+            _state.TotalProductsInBase = _state.Products.Count;
+        }
     }
 
     public string Header => "Товары";
 
-    public string Description => "Складской каталог с загрузкой из API, обновлением карточек и привязкой фото товара.";
+    public string Description => "Добавляйте товары вручную, импортируйте из файла и редактируйте карточки склада.";
 
     public IEnumerable<ProductItem> Products => _state.Products;
 
@@ -64,8 +66,8 @@ public sealed class ProductsSectionViewModel : ViewModelBase
         : _state.IsAdmin ? "Администратор" : "Оператор";
 
     public string DeleteAccessText => _state.IsAdmin
-        ? "Удаление товара доступно для администратора и отправляет запрос на сервер."
-        : "Удаление товара заблокировано: нужен уровень доступа Администратор.";
+        ? "Удаление доступно администратору. При API-сессии удаление уходит на сервер."
+        : "Удаление скрыто для оператора. Добавление, импорт и редактирование доступны.";
 
     public ProductItem? SelectedProduct
     {
@@ -93,7 +95,7 @@ public sealed class ProductsSectionViewModel : ViewModelBase
             WarehouseLocation = value.WarehouseLocation;
             ImagePath = value.ImagePath;
             _imageChanged = false;
-            StatusMessage = $"Карточка товара «{value.Name}» загружена из API.";
+            StatusMessage = $"Карточка товара \"{value.Name}\" загружена.";
             SaveProductCommand.RaiseCanExecuteChanged();
             DeleteProductCommand.RaiseCanExecuteChanged();
         }
@@ -158,7 +160,7 @@ public sealed class ProductsSectionViewModel : ViewModelBase
 
     public bool HasImage => !string.IsNullOrWhiteSpace(ImagePath);
 
-    public string ImageLabel => HasImage ? "Фото товара подключено" : "Фото пока не выбрано";
+    public string ImageLabel => HasImage ? "Изображение выбрано" : "Изображение не выбрано";
 
     public string StatusMessage
     {
@@ -182,6 +184,7 @@ public sealed class ProductsSectionViewModel : ViewModelBase
             DeleteProductCommand.RaiseCanExecuteChanged();
             ClearFormCommand.RaiseCanExecuteChanged();
             ChooseImageCommand.RaiseCanExecuteChanged();
+            ImportProductsCommand.RaiseCanExecuteChanged();
         }
     }
 
@@ -197,11 +200,14 @@ public sealed class ProductsSectionViewModel : ViewModelBase
 
     public RelayCommand ChooseImageCommand { get; }
 
+    public RelayCommand ImportProductsCommand { get; }
+
     private async Task LoadProductsAsync()
     {
         if (_inventoryApiService is null)
         {
-            StatusMessage = "API-сервис для товаров недоступен.";
+            _state.TotalProductsInBase = _state.Products.Count;
+            StatusMessage = $"Локальный режим: доступно {_state.Products.Count} товаров.";
             return;
         }
 
@@ -223,10 +229,8 @@ public sealed class ProductsSectionViewModel : ViewModelBase
                 _state.Products.Add(product);
             }
 
-            _state.TotalProductsInBase = _state.Products.Count;
-            _state.LastCheckDate = DateTime.Today.ToString("dd.MM.yyyy");
-            OnPropertyChanged(nameof(Products));
-            StatusMessage = $"Товары загружены: {_state.Products.Count} поз.";
+            SyncStateAfterProductsChanged();
+            StatusMessage = $"Товары загружены: {_state.Products.Count} позиций.";
         }
         finally
         {
@@ -236,12 +240,6 @@ public sealed class ProductsSectionViewModel : ViewModelBase
 
     private async Task AddProductAsync()
     {
-        if (_inventoryApiService is null)
-        {
-            StatusMessage = "API-сервис для товаров недоступен.";
-            return;
-        }
-
         if (!ValidateForm(out var quantity, out var unitPrice))
         {
             return;
@@ -250,32 +248,48 @@ public sealed class ProductsSectionViewModel : ViewModelBase
         try
         {
             IsBusy = true;
-            StatusMessage = "Создаю товар на сервере...";
 
             var draft = new ProductItem
             {
+                Id = Guid.NewGuid(),
                 Name = ProductName.Trim(),
                 Sku = Sku.Trim(),
                 Category = Category.Trim(),
                 Unit = Unit.Trim(),
                 Quantity = quantity,
                 UnitPrice = unitPrice,
-                WarehouseLocation = WarehouseLocation.Trim()
+                WarehouseLocation = WarehouseLocation.Trim(),
+                LastUpdatedUtc = DateTime.UtcNow,
+                ImagePath = ImagePath
             };
 
-            var result = await _inventoryApiService.CreateProductAsync(draft, ImagePath, CancellationToken.None);
-            if (!result.Succeeded || result.Value is null)
+            _lastAddUsedLocalFallback = false;
+
+            if (_inventoryApiService is not null)
             {
-                StatusMessage = BuildApiErrorMessage(result.ErrorMessage, result.StatusCode, "Не удалось создать товар.");
-                return;
+                StatusMessage = "Создаю товар на сервере...";
+                var result = await _inventoryApiService.CreateProductAsync(draft, ImagePath, CancellationToken.None);
+                if (!result.Succeeded || result.Value is null)
+                {
+                    _lastAddUsedLocalFallback = true;
+                    draft.LastUpdatedUtc = DateTime.UtcNow;
+                    draft.ImagePath = ImagePath;
+                    StatusMessage = BuildApiErrorMessage(result.ErrorMessage, result.StatusCode, "Не удалось создать товар в API. Позиция будет добавлена локально.");
+                }
+                else
+                {
+                    draft = result.Value;
+                }
             }
 
-            _state.Products.Add(result.Value);
-            _state.TotalProductsInBase = _state.Products.Count;
-            _state.LastCheckDate = DateTime.Today.ToString("dd.MM.yyyy");
-            OnPropertyChanged(nameof(Products));
-            SelectedProduct = result.Value;
-            StatusMessage = $"Товар «{result.Value.Name}» создан и отправлен в API.";
+            _state.Products.Add(draft);
+            SyncStateAfterProductsChanged();
+            SelectedProduct = draft;
+            StatusMessage = _lastAddUsedLocalFallback
+                ? $"Товар \"{draft.Name}\" добавлен локально после ошибки API."
+                : _inventoryApiService is null
+                ? $"Товар \"{draft.Name}\" добавлен вручную."
+                : $"Товар \"{draft.Name}\" добавлен и отправлен в API.";
         }
         finally
         {
@@ -285,12 +299,6 @@ public sealed class ProductsSectionViewModel : ViewModelBase
 
     private async Task UpdateProductAsync()
     {
-        if (_inventoryApiService is null)
-        {
-            StatusMessage = "API-сервис для товаров недоступен.";
-            return;
-        }
-
         if (SelectedProduct is null)
         {
             StatusMessage = "Сначала выберите товар из списка.";
@@ -305,7 +313,6 @@ public sealed class ProductsSectionViewModel : ViewModelBase
         try
         {
             IsBusy = true;
-            StatusMessage = "Обновляю карточку товара...";
 
             var draft = new ProductItem
             {
@@ -317,21 +324,29 @@ public sealed class ProductsSectionViewModel : ViewModelBase
                 Quantity = quantity,
                 UnitPrice = unitPrice,
                 WarehouseLocation = WarehouseLocation.Trim(),
-                LastUpdatedUtc = SelectedProduct.LastUpdatedUtc,
+                LastUpdatedUtc = DateTime.UtcNow,
                 ImagePath = ImagePath
             };
 
-            var result = await _inventoryApiService.UpdateProductAsync(draft, ImagePath, _imageChanged, CancellationToken.None);
-            if (!result.Succeeded || result.Value is null)
+            if (_inventoryApiService is not null)
             {
-                StatusMessage = BuildApiErrorMessage(result.ErrorMessage, result.StatusCode, "Не удалось обновить товар.");
-                return;
+                StatusMessage = "Обновляю карточку товара...";
+                var result = await _inventoryApiService.UpdateProductAsync(draft, ImagePath, _imageChanged, CancellationToken.None);
+                if (!result.Succeeded || result.Value is null)
+                {
+                    StatusMessage = BuildApiErrorMessage(result.ErrorMessage, result.StatusCode, "Не удалось обновить товар.");
+                    return;
+                }
+
+                draft = result.Value;
             }
 
-            CopyProductValues(SelectedProduct, result.Value);
-            _state.LastCheckDate = DateTime.Today.ToString("dd.MM.yyyy");
+            CopyProductValues(SelectedProduct, draft);
             _imageChanged = false;
-            StatusMessage = $"Карточка товара «{SelectedProduct.Name}» обновлена через API.";
+            SyncStateAfterProductsChanged();
+            StatusMessage = _inventoryApiService is null
+                ? $"Товар \"{SelectedProduct.Name}\" обновлен локально."
+                : $"Товар \"{SelectedProduct.Name}\" обновлен через API.";
         }
         finally
         {
@@ -341,12 +356,6 @@ public sealed class ProductsSectionViewModel : ViewModelBase
 
     private async Task DeleteProductAsync()
     {
-        if (_inventoryApiService is null)
-        {
-            StatusMessage = "API-сервис для товаров недоступен.";
-            return;
-        }
-
         if (!CanDeleteProducts)
         {
             StatusMessage = "Удалять товары может только администратор.";
@@ -355,7 +364,7 @@ public sealed class ProductsSectionViewModel : ViewModelBase
 
         if (SelectedProduct is null)
         {
-            StatusMessage = "Нечего удалять: товар не выбран.";
+            StatusMessage = "Товар не выбран.";
             return;
         }
 
@@ -364,21 +373,24 @@ public sealed class ProductsSectionViewModel : ViewModelBase
         try
         {
             IsBusy = true;
-            StatusMessage = $"Удаляю товар «{product.Name}»...";
 
-            var result = await _inventoryApiService.DeleteProductAsync(product.Id, CancellationToken.None);
-            if (!result.Succeeded)
+            if (_inventoryApiService is not null)
             {
-                StatusMessage = BuildApiErrorMessage(result.ErrorMessage, result.StatusCode, "Не удалось удалить товар.");
-                return;
+                StatusMessage = $"Удаляю товар \"{product.Name}\"...";
+                var result = await _inventoryApiService.DeleteProductAsync(product.Id, CancellationToken.None);
+                if (!result.Succeeded)
+                {
+                    StatusMessage = BuildApiErrorMessage(result.ErrorMessage, result.StatusCode, "Не удалось удалить товар.");
+                    return;
+                }
             }
 
             _state.Products.Remove(product);
-            _state.TotalProductsInBase = _state.Products.Count;
-            _state.LastCheckDate = DateTime.Today.ToString("dd.MM.yyyy");
-            OnPropertyChanged(nameof(Products));
+            SyncStateAfterProductsChanged();
             ClearForm();
-            StatusMessage = $"Товар «{product.Name}» удалён с сервера.";
+            StatusMessage = _inventoryApiService is null
+                ? $"Товар \"{product.Name}\" удален локально."
+                : $"Товар \"{product.Name}\" удален с сервера.";
         }
         finally
         {
@@ -401,14 +413,14 @@ public sealed class ProductsSectionViewModel : ViewModelBase
         OnPropertyChanged(nameof(SelectedProduct));
         SaveProductCommand.RaiseCanExecuteChanged();
         DeleteProductCommand.RaiseCanExecuteChanged();
-        StatusMessage = "Форма очищена. Можно создать новую карточку товара.";
+        StatusMessage = "Форма очищена. Можно добавить товар вручную или импортировать файл.";
     }
 
     private void ChooseImage()
     {
         var dialog = new OpenFileDialog
         {
-            Title = "Выберите фото товара",
+            Title = "Выберите изображение товара",
             Filter = "Изображения|*.png;*.jpg;*.jpeg;*.bmp;*.webp"
         };
 
@@ -419,7 +431,7 @@ public sealed class ProductsSectionViewModel : ViewModelBase
 
         ImagePath = dialog.FileName;
         _imageChanged = true;
-        StatusMessage = $"Фото товара выбрано: {Path.GetFileName(dialog.FileName)}.";
+        StatusMessage = $"Изображение выбрано: {Path.GetFileName(dialog.FileName)}.";
     }
 
     private bool ValidateForm(out int quantity, out decimal unitPrice)
@@ -439,18 +451,83 @@ public sealed class ProductsSectionViewModel : ViewModelBase
 
         if (!int.TryParse(QuantityInput, NumberStyles.Integer, CultureInfo.InvariantCulture, out quantity) || quantity < 0)
         {
-            StatusMessage = "Количество должно быть целым числом от 0 и выше.";
+            StatusMessage = "Количество должно быть целым числом от 0.";
             return false;
         }
 
         var normalizedPrice = UnitPriceInput.Replace(',', '.');
         if (!decimal.TryParse(normalizedPrice, NumberStyles.Number, CultureInfo.InvariantCulture, out unitPrice) || unitPrice < 0)
         {
-            StatusMessage = "Цена должна быть числом от 0 и выше.";
+            StatusMessage = "Цена должна быть числом от 0.";
             return false;
         }
 
         return true;
+    }
+
+    private void ImportProductsFromFile()
+    {
+        var dialog = new OpenFileDialog
+        {
+            Title = "Импорт товаров из CSV",
+            Filter = "CSV файлы|*.csv"
+        };
+
+        if (dialog.ShowDialog() != true)
+        {
+            return;
+        }
+
+        var imported = 0;
+        foreach (var line in File.ReadLines(dialog.FileName))
+        {
+            if (string.IsNullOrWhiteSpace(line))
+            {
+                continue;
+            }
+
+            var parts = line.Split(';');
+            if (parts.Length < 6)
+            {
+                continue;
+            }
+
+            if (!int.TryParse(parts[4], out var quantity))
+            {
+                continue;
+            }
+
+            if (!decimal.TryParse(parts[5].Replace(',', '.'), NumberStyles.Number, CultureInfo.InvariantCulture, out var unitPrice))
+            {
+                continue;
+            }
+
+            _state.Products.Add(new ProductItem
+            {
+                Id = Guid.NewGuid(),
+                Name = parts[0].Trim(),
+                Sku = parts[1].Trim(),
+                Category = parts[2].Trim(),
+                Unit = parts[3].Trim(),
+                Quantity = quantity,
+                UnitPrice = unitPrice,
+                WarehouseLocation = parts.Length > 6 ? parts[6].Trim() : "Не указано",
+                LastUpdatedUtc = DateTime.UtcNow
+            });
+            imported++;
+        }
+
+        SyncStateAfterProductsChanged();
+        StatusMessage = imported == 0
+            ? "Импорт не выполнен: проверьте формат CSV."
+            : $"Импорт завершен: добавлено {imported} товаров.";
+    }
+
+    private void SyncStateAfterProductsChanged()
+    {
+        _state.TotalProductsInBase = _state.Products.Count;
+        _state.LastCheckDate = DateTime.Today.ToString("dd.MM.yyyy");
+        OnPropertyChanged(nameof(Products));
     }
 
     private static string BuildApiErrorMessage(string? errorMessage, int? statusCode, string fallback)
