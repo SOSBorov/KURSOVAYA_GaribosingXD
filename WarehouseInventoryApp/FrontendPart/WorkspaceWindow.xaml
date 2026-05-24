@@ -1,0 +1,350 @@
+<Window x:Class="WarehouseInventory.Desktop.WorkspaceWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        mc:Ignorable="d"
+        Title="MaxPovezet Workspace"
+        Width="1380"
+        Height="860"
+        MinWidth="1160"
+        MinHeight="760"
+        WindowStartupLocation="CenterScreen"
+        Background="#E9EDF5">
+    <Window.Resources>
+        <Style x:Key="SidebarButtonStyle" TargetType="Button">
+            <Setter Property="Height" Value="56" />
+            <Setter Property="Margin" Value="0,0,0,12" />
+            <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+            <Setter Property="Padding" Value="0" />
+            <Setter Property="Foreground" Value="#F7FAFF" />
+            <Setter Property="Background" Value="#00000000" />
+            <Setter Property="BorderBrush" Value="#00000000" />
+            <Setter Property="FontSize" Value="15" />
+            <Setter Property="FontWeight" Value="SemiBold" />
+            <Setter Property="Cursor" Value="Hand" />
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border x:Name="Root"
+                                Background="{TemplateBinding Background}"
+                                CornerRadius="18">
+                            <Grid Margin="16,0">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="8" />
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="Auto" />
+                                </Grid.ColumnDefinitions>
+
+                                <Border x:Name="Marker"
+                                        Width="8"
+                                        Height="8"
+                                        VerticalAlignment="Center"
+                                        CornerRadius="4"
+                                        Background="#00FFFFFF" />
+
+                                <ContentPresenter Grid.Column="1"
+                                                  VerticalAlignment="Center"
+                                                  Margin="16,0,0,0" />
+
+                                <Border x:Name="ArrowBadge"
+                                        Grid.Column="2"
+                                        Width="28"
+                                        Height="28"
+                                        Margin="12,0,0,0"
+                                        VerticalAlignment="Center"
+                                        CornerRadius="14"
+                                        Background="#00FFFFFF">
+                                    <TextBlock HorizontalAlignment="Center"
+                                               VerticalAlignment="Center"
+                                               Foreground="#D8E5FF"
+                                               FontSize="13"
+                                               FontWeight="Bold"
+                                               Text="→" />
+                                </Border>
+                            </Grid>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="Root" Property="Background" Value="#1CFFFFFF" />
+                                <Setter TargetName="Marker" Property="Background" Value="#7ED3FF" />
+                                <Setter TargetName="ArrowBadge" Property="Background" Value="#18FFFFFF" />
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <Style TargetType="Button">
+            <Setter Property="Foreground" Value="#2E363E" />
+            <Setter Property="FontSize" Value="16" />
+            <Setter Property="Padding" Value="16,10" />
+            <Setter Property="Cursor" Value="Hand" />
+            <Setter Property="BorderThickness" Value="0" />
+            <Setter Property="Background" Value="#FFFFFF" />
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border x:Name="Root"
+                                Background="{TemplateBinding Background}"
+                                BorderBrush="{TemplateBinding BorderBrush}"
+                                BorderThickness="{TemplateBinding BorderThickness}"
+                                CornerRadius="14">
+                            <ContentPresenter HorizontalAlignment="Center"
+                                              VerticalAlignment="Center" />
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="Root" Property="Opacity" Value="0.93" />
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+    </Window.Resources>
+
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="306" />
+            <ColumnDefinition Width="*" />
+        </Grid.ColumnDefinitions>
+
+        <Border Grid.Column="0"
+                Margin="22,22,0,22"
+                CornerRadius="30">
+            <Border.Background>
+                <LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
+                    <GradientStop Color="#273556" Offset="0" />
+                    <GradientStop Color="#1D2942" Offset="0.58" />
+                    <GradientStop Color="#182134" Offset="1" />
+                </LinearGradientBrush>
+            </Border.Background>
+
+            <Grid ClipToBounds="True">
+                <Ellipse Width="240"
+                         Height="240"
+                         Margin="-120,-80,0,0"
+                         HorizontalAlignment="Left"
+                         VerticalAlignment="Top"
+                         Fill="#1AC3F4FF" />
+                <Ellipse Width="190"
+                         Height="190"
+                         Margin="0,0,-80,140"
+                         HorizontalAlignment="Right"
+                         VerticalAlignment="Bottom"
+                         Fill="#12FFCC00" />
+                <Rectangle Height="5"
+                           Margin="24,22,24,0"
+                           VerticalAlignment="Top"
+                           RadiusX="2.5"
+                           RadiusY="2.5">
+                    <Rectangle.Fill>
+                        <LinearGradientBrush StartPoint="0,0.5" EndPoint="1,0.5">
+                            <GradientStop Color="#57D4FF" Offset="0" />
+                            <GradientStop Color="#8D6BFF" Offset="0.52" />
+                            <GradientStop Color="#FFCC00" Offset="1" />
+                        </LinearGradientBrush>
+                    </Rectangle.Fill>
+                </Rectangle>
+
+                <ScrollViewer Margin="22"
+                              VerticalScrollBarVisibility="Auto"
+                              HorizontalScrollBarVisibility="Disabled">
+                    <StackPanel>
+                        <StackPanel Margin="0,22,0,0">
+                            <Border Padding="16"
+                                    CornerRadius="24"
+                                    Background="#14FFFFFF"
+                                    BorderBrush="#20FFFFFF"
+                                    BorderThickness="1">
+                                <StackPanel>
+                                    <TextBlock FontSize="14"
+                                               FontWeight="SemiBold"
+                                               Foreground="#AFC3E8"
+                                               Text="Панель склада" />
+                                    <TextBlock Margin="0,8,0,0"
+                                               FontSize="26"
+                                               FontWeight="Black"
+                                               Foreground="White"
+                                               TextWrapping="Wrap">
+                                        <Run Text="Макс" />
+                                        <Run Text="По" Foreground="#74D8FF" />
+                                        <Run Text="Везет" Foreground="#FFCC00" />
+                                    </TextBlock>
+                                    <TextBlock Margin="0,8,0,0"
+                                               FontSize="13"
+                                               Foreground="#C2D0EB"
+                                               TextWrapping="Wrap"
+                                               Text="Молодая складская навигация: быстро, ярко и без лишней бюрократии." />
+                                </StackPanel>
+                            </Border>
+                        </StackPanel>
+
+                        <Border Margin="0,24,0,22"
+                                Padding="18"
+                                CornerRadius="24"
+                                Background="#17FFFFFF"
+                                BorderBrush="#24FFFFFF"
+                                BorderThickness="1">
+                            <StackPanel>
+                                <TextBlock FontSize="12"
+                                           Foreground="#A9BDE1"
+                                           Text="Локальный оператор" />
+                                <TextBlock Margin="0,8,0,0"
+                                           FontSize="22"
+                                           FontWeight="Bold"
+                                           Foreground="White"
+                                           Text="{Binding CurrentUserName}" />
+                                <Border Margin="0,14,0,0"
+                                        Padding="12,8"
+                                        CornerRadius="16"
+                                        Background="#1D2235">
+                                    <StackPanel>
+                                        <TextBlock FontSize="11"
+                                                   Foreground="#93A9D1"
+                                                   Text="Режим доступа" />
+                                        <TextBlock Margin="0,4,0,0"
+                                                   FontSize="13"
+                                                   FontWeight="SemiBold"
+                                                   Foreground="#E8F0FF"
+                                                   TextWrapping="Wrap"
+                                                   Text="{Binding SessionModeDescription}" />
+                                    </StackPanel>
+                                </Border>
+                            </StackPanel>
+                        </Border>
+
+                        <StackPanel>
+                            <TextBlock Margin="6,0,0,16"
+                                       FontSize="12"
+                                       FontWeight="SemiBold"
+                                       Foreground="#8EA3C9"
+                                       Text="Основные разделы" />
+
+                            <Button Command="{Binding OpenOverviewCommand}"
+                                    Content="Обзор">
+                                <Button.Style>
+                                    <Style TargetType="Button" BasedOn="{StaticResource SidebarButtonStyle}">
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding IsOverviewSection}" Value="True">
+                                                <Setter Property="Background" Value="#26FFFFFF" />
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </Button.Style>
+                            </Button>
+
+                            <Button Command="{Binding OpenProductsCommand}"
+                                    Content="Товары">
+                                <Button.Style>
+                                    <Style TargetType="Button" BasedOn="{StaticResource SidebarButtonStyle}">
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding IsProductsSection}" Value="True">
+                                                <Setter Property="Background" Value="#26FFFFFF" />
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </Button.Style>
+                            </Button>
+
+                            <Button Command="{Binding OpenDocumentsCommand}"
+                                    Content="Документы">
+                                <Button.Style>
+                                    <Style TargetType="Button" BasedOn="{StaticResource SidebarButtonStyle}">
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding IsDocumentsSection}" Value="True">
+                                                <Setter Property="Background" Value="#26FFFFFF" />
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </Button.Style>
+                            </Button>
+
+                            <Button Command="{Binding OpenSuppliesCommand}"
+                                    Content="Поставки">
+                                <Button.Style>
+                                    <Style TargetType="Button" BasedOn="{StaticResource SidebarButtonStyle}">
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding IsSuppliesSection}" Value="True">
+                                                <Setter Property="Background" Value="#26FFFFFF" />
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </Button.Style>
+                            </Button>
+
+                            <Button Command="{Binding OpenProfileCommand}"
+                                    Content="Профиль">
+                                <Button.Style>
+                                    <Style TargetType="Button" BasedOn="{StaticResource SidebarButtonStyle}">
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding IsProfileSection}" Value="True">
+                                                <Setter Property="Background" Value="#26FFFFFF" />
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </Button.Style>
+                            </Button>
+                        </StackPanel>
+
+                        <Border Margin="0,18,0,0"
+                                Padding="18"
+                                CornerRadius="24"
+                                Background="#15FFFFFF"
+                                BorderBrush="#24FFFFFF"
+                                BorderThickness="1">
+                            <StackPanel>
+                                <TextBlock FontSize="12"
+                                           Foreground="#A8BCE0"
+                                           Text="Сессия" />
+                                <TextBlock Margin="0,6,0,0"
+                                           FontSize="13"
+                                           Foreground="#E3ECFF"
+                                           TextWrapping="Wrap"
+                                           Text="Все изменения пока локальные. Если стиль не зайдет, откатим без боли." />
+                                <Button Margin="0,18,0,0"
+                                        Height="46"
+                                        Background="#FFCC00"
+                                        Foreground="#20283D"
+                                        FontWeight="Bold"
+                                        Command="{Binding LogoutCommand}"
+                                        Content="Выйти" />
+                            </StackPanel>
+                        </Border>
+                    </StackPanel>
+                </ScrollViewer>
+            </Grid>
+        </Border>
+
+        <Border Grid.Column="1"
+                Margin="24,22,22,22"
+                CornerRadius="32"
+                Background="#F8F9FC">
+            <Border.Effect>
+                <DropShadowEffect BlurRadius="22"
+                                  ShadowDepth="0"
+                                  Opacity="0.08" />
+            </Border.Effect>
+            <Grid>
+                <Rectangle Height="6"
+                           Margin="28,18,28,0"
+                           VerticalAlignment="Top"
+                           RadiusX="3"
+                           RadiusY="3">
+                    <Rectangle.Fill>
+                        <LinearGradientBrush StartPoint="0,0.5" EndPoint="1,0.5">
+                            <GradientStop Color="#7AD7FF" Offset="0" />
+                            <GradientStop Color="#6D83FF" Offset="0.52" />
+                            <GradientStop Color="#FFD24A" Offset="1" />
+                        </LinearGradientBrush>
+                    </Rectangle.Fill>
+                </Rectangle>
+
+                <ContentControl Margin="0,14,0,0"
+                                Content="{Binding CurrentSectionView}" />
+            </Grid>
+        </Border>
+    </Grid>
+</Window>
