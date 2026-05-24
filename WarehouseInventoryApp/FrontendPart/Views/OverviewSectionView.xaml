@@ -1,0 +1,125 @@
+<UserControl x:Class="WarehouseInventory.Desktop.Views.OverviewSectionView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d"
+             d:DesignHeight="760"
+             d:DesignWidth="1040">
+    <Grid Margin="30">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+
+        <StackPanel>
+            <TextBlock FontSize="32"
+                       FontWeight="Bold"
+                       Text="{Binding Header}" />
+            <TextBlock Margin="0,8,0,0"
+                       FontSize="15"
+                       Foreground="#667085"
+                       Text="{Binding Description}" />
+            <Border Margin="0,18,0,0"
+                    Padding="20"
+                    CornerRadius="22">
+                <Border.Background>
+                    <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                        <GradientStop Color="#365BCC" Offset="0" />
+                        <GradientStop Color="#24A0D9" Offset="1" />
+                    </LinearGradientBrush>
+                </Border.Background>
+                <StackPanel>
+                    <TextBlock Foreground="#DDE8FF"
+                               FontSize="12"
+                               Text="ВСЕГО ТОВАРОВ НА СКЛАДЕ" />
+                    <TextBlock Margin="0,8,0,0"
+                               Foreground="White"
+                               FontSize="44"
+                               FontWeight="Bold"
+                               Text="{Binding TotalProductsText}" />
+                </StackPanel>
+            </Border>
+        </StackPanel>
+
+        <UniformGrid Grid.Row="1"
+                     Margin="0,28,0,28"
+                     Columns="3">
+            <Border Margin="0,0,18,0"
+                    Padding="22"
+                    CornerRadius="20"
+                    Background="#FFFFFF">
+                <StackPanel>
+                    <TextBlock FontSize="13"
+                               Foreground="#6B7587"
+                               Text="Всего товаров в базе" />
+                    <TextBlock Margin="0,12,0,0"
+                               FontSize="36"
+                               FontWeight="Bold"
+                               Text="{Binding TotalProductsText}" />
+                </StackPanel>
+            </Border>
+
+            <Border Margin="0,0,18,0"
+                    Padding="22"
+                    CornerRadius="20"
+                    Background="#FFFFFF">
+                <StackPanel>
+                    <TextBlock FontSize="13"
+                               Foreground="#6B7587"
+                               Text="Последняя проверка" />
+                    <TextBlock Margin="0,12,0,0"
+                               FontSize="36"
+                               FontWeight="Bold"
+                               Text="{Binding LastCheckText}" />
+                </StackPanel>
+            </Border>
+
+            <Border Padding="22"
+                    CornerRadius="20"
+                    Background="#FFFFFF">
+                <StackPanel>
+                    <TextBlock FontSize="13"
+                               Foreground="#6B7587"
+                               Text="Активных документов" />
+                    <TextBlock Margin="0,12,0,0"
+                               FontSize="36"
+                               FontWeight="Bold"
+                               Text="{Binding ActiveDocumentsText}" />
+                </StackPanel>
+            </Border>
+        </UniformGrid>
+
+        <Border Grid.Row="2"
+                Padding="28"
+                CornerRadius="24"
+                Background="#FFFFFF">
+            <StackPanel>
+                <TextBlock FontSize="24"
+                           FontWeight="SemiBold"
+                           Text="Краткая сводка" />
+                <TextBlock Margin="0,16,0,0"
+                           FontSize="15"
+                           Foreground="#5F6C80"
+                           TextWrapping="Wrap">
+                    Эта страница открывается первой после входа или регистрации. Здесь можно быстро увидеть основные цифры по складу и затем перейти в отдельные окна товаров, документов и поставок.
+                </TextBlock>
+                <Border Margin="0,24,0,0"
+                        Padding="18"
+                        CornerRadius="18"
+                        Background="#F5F7FB">
+                    <StackPanel>
+                        <TextBlock FontSize="14"
+                                   Foreground="#667085"
+                                   Text="Активный пользователь" />
+                        <TextBlock Margin="0,10,0,0"
+                                   FontSize="22"
+                                   FontWeight="Bold"
+                                   Text="{Binding UserText}" />
+                    </StackPanel>
+                </Border>
+            </StackPanel>
+        </Border>
+    </Grid>
+</UserControl>

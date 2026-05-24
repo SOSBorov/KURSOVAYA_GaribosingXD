@@ -4,7 +4,7 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         mc:Ignorable="d"
-        Title="MaxPovezet Workspace"
+        Title="Warehouse Inventory"
         Width="1380"
         Height="860"
         MinWidth="1160"
@@ -60,7 +60,7 @@
                                                Foreground="#D8E5FF"
                                                FontSize="13"
                                                FontWeight="Bold"
-                                               Text="→" />
+                                               Text=">" />
                                 </Border>
                             </Grid>
                         </Border>
@@ -135,52 +135,35 @@
                          HorizontalAlignment="Right"
                          VerticalAlignment="Bottom"
                          Fill="#12FFCC00" />
-                <Rectangle Height="5"
-                           Margin="24,22,24,0"
-                           VerticalAlignment="Top"
-                           RadiusX="2.5"
-                           RadiusY="2.5">
-                    <Rectangle.Fill>
-                        <LinearGradientBrush StartPoint="0,0.5" EndPoint="1,0.5">
-                            <GradientStop Color="#57D4FF" Offset="0" />
-                            <GradientStop Color="#8D6BFF" Offset="0.52" />
-                            <GradientStop Color="#FFCC00" Offset="1" />
-                        </LinearGradientBrush>
-                    </Rectangle.Fill>
-                </Rectangle>
 
                 <ScrollViewer Margin="22"
                               VerticalScrollBarVisibility="Auto"
                               HorizontalScrollBarVisibility="Disabled">
                     <StackPanel>
-                        <StackPanel Margin="0,22,0,0">
-                            <Border Padding="16"
-                                    CornerRadius="24"
-                                    Background="#14FFFFFF"
-                                    BorderBrush="#20FFFFFF"
-                                    BorderThickness="1">
-                                <StackPanel>
-                                    <TextBlock FontSize="14"
-                                               FontWeight="SemiBold"
-                                               Foreground="#AFC3E8"
-                                               Text="Панель склада" />
-                                    <TextBlock Margin="0,8,0,0"
-                                               FontSize="26"
-                                               FontWeight="Black"
-                                               Foreground="White"
-                                               TextWrapping="Wrap">
-                                        <Run Text="Макс" />
-                                        <Run Text="По" Foreground="#74D8FF" />
-                                        <Run Text="Везет" Foreground="#FFCC00" />
-                                    </TextBlock>
-                                    <TextBlock Margin="0,8,0,0"
-                                               FontSize="13"
-                                               Foreground="#C2D0EB"
-                                               TextWrapping="Wrap"
-                                               Text="Молодая складская навигация: быстро, ярко и без лишней бюрократии." />
-                                </StackPanel>
-                            </Border>
-                        </StackPanel>
+                        <Border Margin="0,22,0,0"
+                                Padding="16"
+                                CornerRadius="24"
+                                Background="#14FFFFFF"
+                                BorderBrush="#20FFFFFF"
+                                BorderThickness="1">
+                            <StackPanel>
+                                <TextBlock FontSize="14"
+                                           FontWeight="SemiBold"
+                                           Foreground="#AFC3E8"
+                                           Text="Панель склада" />
+                                <TextBlock Margin="0,8,0,0"
+                                           FontSize="26"
+                                           FontWeight="Black"
+                                           Foreground="White"
+                                           TextWrapping="Wrap"
+                                           Text="Warehouse Inventory Desktop" />
+                                <TextBlock Margin="0,8,0,0"
+                                           FontSize="13"
+                                           Foreground="#C2D0EB"
+                                           TextWrapping="Wrap"
+                                           Text="Клиентское приложение для работы с товарами, остатками и отчетами." />
+                            </StackPanel>
+                        </Border>
 
                         <Border Margin="0,24,0,22"
                                 Padding="18"
@@ -191,7 +174,7 @@
                             <StackPanel>
                                 <TextBlock FontSize="12"
                                            Foreground="#A9BDE1"
-                                           Text="Локальный оператор" />
+                                           Text="Текущий пользователь" />
                                 <TextBlock Margin="0,8,0,0"
                                            FontSize="22"
                                            FontWeight="Bold"
@@ -249,12 +232,12 @@
                                 </Button.Style>
                             </Button>
 
-                            <Button Command="{Binding OpenDocumentsCommand}"
-                                    Content="Документы">
+                            <Button Command="{Binding OpenReportsCommand}"
+                                    Content="Отчеты">
                                 <Button.Style>
                                     <Style TargetType="Button" BasedOn="{StaticResource SidebarButtonStyle}">
                                         <Style.Triggers>
-                                            <DataTrigger Binding="{Binding IsDocumentsSection}" Value="True">
+                                            <DataTrigger Binding="{Binding IsReportsSection}" Value="True">
                                                 <Setter Property="Background" Value="#26FFFFFF" />
                                             </DataTrigger>
                                         </Style.Triggers>
@@ -262,13 +245,16 @@
                                 </Button.Style>
                             </Button>
 
-                            <Button Command="{Binding OpenSuppliesCommand}"
-                                    Content="Поставки">
+                            <Button Command="{Binding OpenInventoryCommand}"
+                                    Content="Остатки">
                                 <Button.Style>
                                     <Style TargetType="Button" BasedOn="{StaticResource SidebarButtonStyle}">
                                         <Style.Triggers>
-                                            <DataTrigger Binding="{Binding IsSuppliesSection}" Value="True">
+                                            <DataTrigger Binding="{Binding IsInventorySection}" Value="True">
                                                 <Setter Property="Background" Value="#26FFFFFF" />
+                                            </DataTrigger>
+                                            <DataTrigger Binding="{Binding IsOperator}" Value="False">
+                                                <Setter Property="Visibility" Value="Collapsed" />
                                             </DataTrigger>
                                         </Style.Triggers>
                                     </Style>
@@ -303,7 +289,7 @@
                                            FontSize="13"
                                            Foreground="#E3ECFF"
                                            TextWrapping="Wrap"
-                                           Text="Все изменения пока локальные. Если стиль не зайдет, откатим без боли." />
+                                           Text="Все изменения в desktop-версии можно переносить по папкам-коммитам по порядку." />
                                 <Button Margin="0,18,0,0"
                                         Height="46"
                                         Background="#FFCC00"
@@ -327,24 +313,8 @@
                                   ShadowDepth="0"
                                   Opacity="0.08" />
             </Border.Effect>
-            <Grid>
-                <Rectangle Height="6"
-                           Margin="28,18,28,0"
-                           VerticalAlignment="Top"
-                           RadiusX="3"
-                           RadiusY="3">
-                    <Rectangle.Fill>
-                        <LinearGradientBrush StartPoint="0,0.5" EndPoint="1,0.5">
-                            <GradientStop Color="#7AD7FF" Offset="0" />
-                            <GradientStop Color="#6D83FF" Offset="0.52" />
-                            <GradientStop Color="#FFD24A" Offset="1" />
-                        </LinearGradientBrush>
-                    </Rectangle.Fill>
-                </Rectangle>
-
-                <ContentControl Margin="0,14,0,0"
-                                Content="{Binding CurrentSectionView}" />
-            </Grid>
+            <ContentControl Margin="0,14,0,0"
+                            Content="{Binding CurrentSectionView}" />
         </Border>
     </Grid>
 </Window>

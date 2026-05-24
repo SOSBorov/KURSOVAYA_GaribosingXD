@@ -18,13 +18,20 @@ public sealed class WorkspaceViewModel : ViewModelBase
         _state = state;
         _logout = logout;
 
+        if (section == WorkspaceSection.Inventory && _state.IsAdmin)
+        {
+            section = WorkspaceSection.Overview;
+        }
+
         _currentSection = section;
         _currentSectionView = CreateSectionViewModel(section);
 
         OpenOverviewCommand = new RelayCommand(() => NavigateTo(WorkspaceSection.Overview));
         OpenProductsCommand = new RelayCommand(() => NavigateTo(WorkspaceSection.Products));
-        OpenDocumentsCommand = new RelayCommand(() => NavigateTo(WorkspaceSection.Documents));
-        OpenSuppliesCommand = new RelayCommand(() => NavigateTo(WorkspaceSection.Supplies));
+        OpenReportsCommand = new RelayCommand(() => NavigateTo(WorkspaceSection.Reports));
+        OpenInventoryCommand = new RelayCommand(
+            () => NavigateTo(WorkspaceSection.Inventory),
+            () => IsOperator);
         OpenProfileCommand = new RelayCommand(() => NavigateTo(WorkspaceSection.Profile));
         LogoutCommand = new RelayCommand(_logout);
     }
@@ -41,8 +48,8 @@ public sealed class WorkspaceViewModel : ViewModelBase
 
             OnPropertyChanged(nameof(IsOverviewSection));
             OnPropertyChanged(nameof(IsProductsSection));
-            OnPropertyChanged(nameof(IsDocumentsSection));
-            OnPropertyChanged(nameof(IsSuppliesSection));
+            OnPropertyChanged(nameof(IsReportsSection));
+            OnPropertyChanged(nameof(IsInventorySection));
             OnPropertyChanged(nameof(IsProfileSection));
         }
     }
@@ -51,11 +58,13 @@ public sealed class WorkspaceViewModel : ViewModelBase
 
     public bool IsProductsSection => CurrentSection == WorkspaceSection.Products;
 
-    public bool IsDocumentsSection => CurrentSection == WorkspaceSection.Documents;
+    public bool IsReportsSection => CurrentSection == WorkspaceSection.Reports;
 
-    public bool IsSuppliesSection => CurrentSection == WorkspaceSection.Supplies;
+    public bool IsInventorySection => CurrentSection == WorkspaceSection.Inventory;
 
     public bool IsProfileSection => CurrentSection == WorkspaceSection.Profile;
+
+    public bool IsOperator => !_state.IsAdmin;
 
     public string CurrentUserName => _state.CurrentUserName;
 
@@ -71,9 +80,9 @@ public sealed class WorkspaceViewModel : ViewModelBase
 
     public RelayCommand OpenProductsCommand { get; }
 
-    public RelayCommand OpenDocumentsCommand { get; }
+    public RelayCommand OpenReportsCommand { get; }
 
-    public RelayCommand OpenSuppliesCommand { get; }
+    public RelayCommand OpenInventoryCommand { get; }
 
     public RelayCommand OpenProfileCommand { get; }
 
@@ -96,8 +105,8 @@ public sealed class WorkspaceViewModel : ViewModelBase
         {
             WorkspaceSection.Overview => new OverviewSectionViewModel(_state),
             WorkspaceSection.Products => new ProductsSectionViewModel(_state),
-            WorkspaceSection.Documents => new DocumentsSectionViewModel(),
-            WorkspaceSection.Supplies => new SuppliesSectionViewModel(),
+            WorkspaceSection.Reports => new DocumentsSectionViewModel(_state),
+            WorkspaceSection.Inventory => new InventorySectionViewModel(_state),
             WorkspaceSection.Profile => new ProfileSectionViewModel(_state),
             _ => new OverviewSectionViewModel(_state)
         };
