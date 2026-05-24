@@ -1,0 +1,30 @@
+﻿<Window x:Class="WarehouseInventory.Desktop.Window2DA_NAVIGATION_PAGE"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:WarehouseInventory.Desktop"
+        mc:Ignorable="d"
+        Title="Window2DA_NAVIGATION_PAGE" 
+        Height="760"
+        Width="1180"
+        AllowsTransparency="True"
+        WindowStartupLocation="CenterScreen"
+        WindowStyle="None"
+        Background="Transparent">
+
+    <Grid>
+        <Border Background="#212529"
+        CornerRadius="20"/>
+
+        <Grid>
+
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="200"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+
+        </Grid>
+
+    </Grid>
+</Window>

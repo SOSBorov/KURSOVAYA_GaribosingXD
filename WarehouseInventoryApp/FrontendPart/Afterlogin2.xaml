@@ -1,0 +1,24 @@
+﻿<Page x:Class="WarehouseInventory.Desktop.Afterlogin2"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+      xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+      xmlns:local="clr-namespace:WarehouseInventory.Desktop"
+      mc:Ignorable="d" 
+      d:DesignHeight="760" 
+      d:DesignWidth="1180"
+      MinWidth="980"
+      MinHeight="680"
+      Background="Transparent"
+      Title="Afterlogin2">
+
+
+    <Grid>
+        <Border Background="#FF3B3F42" 
+        BorderThickness="1"
+        CornerRadius="20"/>
+
+
+    </Grid>
+</Page>
+

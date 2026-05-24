@@ -1,0 +1,365 @@
+<UserControl x:Class="WarehouseInventory.Desktop.Views.DashboardView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d"
+             d:DesignHeight="760"
+             d:DesignWidth="1200">
+    <UserControl.Resources>
+        <Style x:Key="SidebarButtonStyle" TargetType="Button">
+            <Setter Property="Height" Value="44" />
+            <Setter Property="Margin" Value="0,0,0,12" />
+            <Setter Property="HorizontalContentAlignment" Value="Left" />
+            <Setter Property="Padding" Value="18,0" />
+            <Setter Property="Foreground" Value="#E8EDFF" />
+            <Setter Property="Background" Value="#00000000" />
+            <Setter Property="BorderBrush" Value="#00000000" />
+            <Setter Property="FontSize" Value="15" />
+        </Style>
+
+        <Style x:Key="MetricCardStyle" TargetType="Border">
+            <Setter Property="CornerRadius" Value="18" />
+            <Setter Property="Padding" Value="20" />
+            <Setter Property="Margin" Value="0,0,18,0" />
+            <Setter Property="Background" Value="#FFFFFF" />
+        </Style>
+    </UserControl.Resources>
+
+    <Grid Background="#EEF1F7">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="240" />
+            <ColumnDefinition Width="*" />
+        </Grid.ColumnDefinitions>
+
+        <Border Grid.Column="0"
+                Margin="24,24,0,24"
+                CornerRadius="24"
+                Background="#24304A">
+            <Grid Margin="20">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="*" />
+                    <RowDefinition Height="Auto" />
+                </Grid.RowDefinitions>
+
+                <StackPanel>
+                    <TextBlock FontSize="26"
+                               FontWeight="Black"
+                               Foreground="White"><Run Text="Склад"/><Run Text=" "/><Run Foreground="#FFFFCC00" Text="Flow"/></TextBlock>
+                    <TextBlock Margin="0,8,0,0"
+                               FontSize="13"
+                               Foreground="#B3C1DD"
+                               Text="Локальная панель управления инвентаризацией" />
+                </StackPanel>
+
+                <Border Grid.Row="1"
+                        Margin="0,28,0,22"
+                        Padding="16"
+                        CornerRadius="18"
+                        Background="#314161">
+                    <StackPanel>
+                        <TextBlock FontSize="12"
+                                   Foreground="#A6B4D2"
+                                   Text="Оператор" />
+                        <TextBlock Margin="0,6,0,0"
+                                   FontSize="18"
+                                   FontWeight="SemiBold"
+                                   Foreground="White"
+                                   Text="{Binding CurrentUserName}" />
+                        <TextBlock Margin="0,6,0,0"
+                                   FontSize="12"
+                                   Foreground="#C8D3EA"
+                                   Text="Доступ: локальная демо-сборка без API" />
+                    </StackPanel>
+                </Border>
+
+                <StackPanel Grid.Row="2">
+                    <Button Style="{StaticResource SidebarButtonStyle}"
+                            Command="{Binding ShowOverviewCommand}"
+                            Content="Обзор" />
+                    <Button Style="{StaticResource SidebarButtonStyle}"
+                            Command="{Binding ShowProductsCommand}"
+                            Content="Товары" />
+                    <Button Style="{StaticResource SidebarButtonStyle}"
+                            Command="{Binding ShowDocumentsCommand}"
+                            Content="Документы" />
+                    <Button Style="{StaticResource SidebarButtonStyle}"
+                            Command="{Binding ShowSupplyCommand}"
+                            Content="Поставки" />
+                </StackPanel>
+
+                <Button Grid.Row="3"
+                        Height="44"
+                        Background="#FFCC00"
+                        Command="{Binding LogoutCommand}"
+                        Content="Выйти" />
+            </Grid>
+        </Border>
+
+        <Grid Grid.Column="1"
+              Margin="24">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="*" />
+            </Grid.RowDefinitions>
+
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+
+                <StackPanel>
+                    <TextBlock FontSize="30"
+                               FontWeight="Bold"
+                               Text="Главная панель склада" />
+                    <TextBlock Margin="0,8,0,0"
+                               FontSize="15"
+                               Foreground="#5D687C"
+                               Text="{Binding ActiveSection, StringFormat=Активный раздел: {0}}" />
+                </StackPanel>
+
+                <Border Grid.Column="1"
+                        Padding="14,10"
+                        CornerRadius="16"
+                        Background="#FFFFFF">
+                    <TextBlock FontSize="14"
+                               FontWeight="SemiBold"
+                               Text="Тестовый режим без API" />
+                </Border>
+            </Grid>
+
+            <UniformGrid Grid.Row="1"
+                         Margin="0,26,0,26"
+                         Columns="3">
+                <Border Style="{StaticResource MetricCardStyle}">
+                    <StackPanel>
+                        <TextBlock FontSize="13"
+                                   Foreground="#6B7587"
+                                   Text="Всего товаров в базе" />
+                        <TextBlock Margin="0,12,0,0"
+                                   FontSize="34"
+                                   FontWeight="Bold"
+                                   Text="{Binding TotalProductsText}" />
+                    </StackPanel>
+                </Border>
+
+                <Border Style="{StaticResource MetricCardStyle}">
+                    <StackPanel>
+                        <TextBlock FontSize="13"
+                                   Foreground="#6B7587"
+                                   Text="Последняя проверка" />
+                        <TextBlock Margin="0,12,0,0"
+                                   FontSize="34"
+                                   FontWeight="Bold"
+                                   Text="{Binding LastCheckText}" />
+                    </StackPanel>
+                </Border>
+
+                <Border Style="{StaticResource MetricCardStyle}"
+                        Margin="0">
+                    <StackPanel>
+                        <TextBlock FontSize="13"
+                                   Foreground="#6B7587"
+                                   Text="Активных документов" />
+                        <TextBlock Margin="0,12,0,0"
+                                   FontSize="34"
+                                   FontWeight="Bold"
+                                   Text="{Binding ActiveDocumentsText}" />
+                    </StackPanel>
+                </Border>
+            </UniformGrid>
+
+            <Grid Grid.Row="2">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="1.15*" />
+                    <ColumnDefinition Width="0.95*" />
+                </Grid.ColumnDefinitions>
+
+                <Border Margin="0,0,24,0"
+                        Padding="22"
+                        CornerRadius="22"
+                        Background="#FFFFFF">
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="*" />
+                        </Grid.RowDefinitions>
+
+                        <StackPanel>
+                            <TextBlock FontSize="24"
+                                       FontWeight="SemiBold"
+                                       Text="Товары" />
+                            <TextBlock Margin="0,6,0,0"
+                                       FontSize="14"
+                                       Foreground="#6B7587"
+                                       Text="Локальный список с товарами, артикулом, категорией и единицами измерения." />
+                        </StackPanel>
+
+                        <DataGrid Grid.Row="1"
+                                  Margin="0,20,0,0"
+                                  AutoGenerateColumns="False"
+                                  CanUserAddRows="False"
+                                  HeadersVisibility="Column"
+                                  GridLinesVisibility="Horizontal"
+                                  ItemsSource="{Binding Products}"
+                                  SelectedItem="{Binding SelectedProduct, Mode=TwoWay}"
+                                  RowBackground="#FFFFFF"
+                                  AlternatingRowBackground="#F7F9FD"
+                                  BorderThickness="0">
+                            <DataGrid.Columns>
+                                <DataGridTextColumn Header="Название"
+                                                    Width="2*"
+                                                    Binding="{Binding Name}" />
+                                <DataGridTextColumn Header="SKU"
+                                                    Width="*"
+                                                    Binding="{Binding Sku}" />
+                                <DataGridTextColumn Header="Категория"
+                                                    Width="*"
+                                                    Binding="{Binding Category}" />
+                                <DataGridTextColumn Header="Ед. изм."
+                                                    Width="*"
+                                                    Binding="{Binding Unit}" />
+                                <DataGridTextColumn Header="Кол-во"
+                                                    Width="*"
+                                                    Binding="{Binding Quantity}" />
+                            </DataGrid.Columns>
+                        </DataGrid>
+                    </Grid>
+                </Border>
+
+                <Border Grid.Column="1"
+                        Padding="22"
+                        CornerRadius="22"
+                        Background="#FFFFFF">
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="*" />
+                            <RowDefinition Height="Auto" />
+                        </Grid.RowDefinitions>
+
+                        <StackPanel>
+                            <TextBlock FontSize="24"
+                                       FontWeight="SemiBold"
+                                       Text="Управление товарами" />
+                            <TextBlock Margin="0,6,0,0"
+                                       FontSize="14"
+                                       Foreground="#6B7587"
+                                       Text="Добавляйте, редактируйте и удаляйте карточки товара локально." />
+                        </StackPanel>
+
+                        <Grid Grid.Row="1"
+                              Margin="0,20,0,0">
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="*" />
+                            </Grid.RowDefinitions>
+
+                            <TextBlock FontSize="13" FontWeight="SemiBold" Text="Название" />
+                            <TextBox Margin="0,24,0,0"
+                                     Height="40"
+                                     VerticalAlignment="Top"
+                                     Text="{Binding ProductName, UpdateSourceTrigger=PropertyChanged}" />
+
+                            <TextBlock Grid.Row="1"
+                                       Margin="0,18,0,0"
+                                       FontSize="13"
+                                       FontWeight="SemiBold"
+                                       Text="Артикул (SKU)" />
+                            <TextBox Grid.Row="1"
+                                     Margin="0,42,0,0"
+                                     Height="40"
+                                     VerticalAlignment="Top"
+                                     Text="{Binding Sku, UpdateSourceTrigger=PropertyChanged}" />
+
+                            <TextBlock Grid.Row="2"
+                                       Margin="0,18,0,0"
+                                       FontSize="13"
+                                       FontWeight="SemiBold"
+                                       Text="Категория" />
+                            <TextBox Grid.Row="2"
+                                     Margin="0,42,0,0"
+                                     Height="40"
+                                     VerticalAlignment="Top"
+                                     Text="{Binding Category, UpdateSourceTrigger=PropertyChanged}" />
+
+                            <Grid Grid.Row="3"
+                                  Margin="0,18,0,0">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="120" />
+                                </Grid.ColumnDefinitions>
+
+                                <StackPanel Margin="0,0,12,0">
+                                    <TextBlock FontSize="13"
+                                               FontWeight="SemiBold"
+                                               Text="Единица измерения" />
+                                    <ComboBox Margin="0,8,0,0"
+                                              Height="40"
+                                              SelectedValue="{Binding Unit, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                              SelectedValuePath="Content">
+                                        <ComboBoxItem Content="шт" />
+                                        <ComboBoxItem Content="кг" />
+                                        <ComboBoxItem Content="л" />
+                                        <ComboBoxItem Content="рулон" />
+                                    </ComboBox>
+                                </StackPanel>
+
+                                <StackPanel Grid.Column="1">
+                                    <TextBlock FontSize="13"
+                                               FontWeight="SemiBold"
+                                               Text="Количество" />
+                                    <TextBox Margin="0,8,0,0"
+                                             Height="40"
+                                             Text="{Binding QuantityInput, UpdateSourceTrigger=PropertyChanged}" />
+                                </StackPanel>
+                            </Grid>
+
+                            <Border Grid.Row="4"
+                                    Margin="0,22,0,0"
+                                    Padding="14"
+                                    CornerRadius="14"
+                                    Background="#F6F8FD">
+                                <TextBlock Foreground="#3756CE"
+                                           TextWrapping="Wrap"
+                                           Text="{Binding StatusMessage}" />
+                            </Border>
+                        </Grid>
+
+                        <UniformGrid Grid.Row="2"
+                                     Margin="0,22,0,0"
+                                     Rows="2"
+                                     Columns="2">
+                            <Button Margin="0,0,10,10"
+                                    Background="#FFCC00"
+                                    Command="{Binding AddProductCommand}"
+                                    Content="Добавить" />
+                            <Button Margin="10,0,0,10"
+                                    Background="#3756CE"
+                                    Foreground="White"
+                                    Command="{Binding SaveProductCommand}"
+                                    Content="Сохранить" />
+                            <Button Margin="0,10,10,0"
+                                    Background="#E9EDF8"
+                                    Command="{Binding ClearFormCommand}"
+                                    Content="Очистить" />
+                            <Button Margin="10,10,0,0"
+                                    Background="#FDE7E7"
+                                    Foreground="#B42318"
+                                    Command="{Binding DeleteProductCommand}"
+                                    Content="Удалить" />
+                        </UniformGrid>
+                    </Grid>
+                </Border>
+            </Grid>
+        </Grid>
+    </Grid>
+</UserControl>
