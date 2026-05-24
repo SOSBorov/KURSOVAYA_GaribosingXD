@@ -41,8 +41,8 @@
             <views:DocumentsSectionView />
         </DataTemplate>
 
-        <DataTemplate DataType="{x:Type viewModels:SuppliesSectionViewModel}">
-            <views:SuppliesSectionView />
+        <DataTemplate DataType="{x:Type viewModels:InventorySectionViewModel}">
+            <views:InventorySectionView />
         </DataTemplate>
 
         <DataTemplate DataType="{x:Type viewModels:ProfileSectionViewModel}">

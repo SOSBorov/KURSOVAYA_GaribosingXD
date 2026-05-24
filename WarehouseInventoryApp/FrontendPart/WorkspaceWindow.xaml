@@ -111,9 +111,7 @@
             <ColumnDefinition Width="*" />
         </Grid.ColumnDefinitions>
 
-        <Border Grid.Column="0"
-                Margin="22,22,0,22"
-                CornerRadius="30">
+        <Border Grid.Column="0" Margin="22,22,0,22" CornerRadius="30">
             <Border.Background>
                 <LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
                     <GradientStop Color="#273556" Offset="0" />
@@ -123,91 +121,36 @@
             </Border.Background>
 
             <Grid ClipToBounds="True">
-                <Ellipse Width="240"
-                         Height="240"
-                         Margin="-120,-80,0,0"
-                         HorizontalAlignment="Left"
-                         VerticalAlignment="Top"
-                         Fill="#1AC3F4FF" />
-                <Ellipse Width="190"
-                         Height="190"
-                         Margin="0,0,-80,140"
-                         HorizontalAlignment="Right"
-                         VerticalAlignment="Bottom"
-                         Fill="#12FFCC00" />
+                <Ellipse Width="240" Height="240" Margin="-120,-80,0,0" HorizontalAlignment="Left" VerticalAlignment="Top" Fill="#1AC3F4FF" />
+                <Ellipse Width="190" Height="190" Margin="0,0,-80,140" HorizontalAlignment="Right" VerticalAlignment="Bottom" Fill="#12FFCC00" />
 
-                <ScrollViewer Margin="22"
-                              VerticalScrollBarVisibility="Auto"
-                              HorizontalScrollBarVisibility="Disabled">
+                <ScrollViewer Margin="22" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
                     <StackPanel>
-                        <Border Margin="0,22,0,0"
-                                Padding="16"
-                                CornerRadius="24"
-                                Background="#14FFFFFF"
-                                BorderBrush="#20FFFFFF"
-                                BorderThickness="1">
+                        <Border Margin="0,22,0,0" Padding="16" CornerRadius="24" Background="#14FFFFFF" BorderBrush="#20FFFFFF" BorderThickness="1">
                             <StackPanel>
-                                <TextBlock FontSize="14"
-                                           FontWeight="SemiBold"
-                                           Foreground="#AFC3E8"
-                                           Text="Панель склада" />
-                                <TextBlock Margin="0,8,0,0"
-                                           FontSize="26"
-                                           FontWeight="Black"
-                                           Foreground="White"
-                                           TextWrapping="Wrap"
-                                           Text="Warehouse Inventory Desktop" />
-                                <TextBlock Margin="0,8,0,0"
-                                           FontSize="13"
-                                           Foreground="#C2D0EB"
-                                           TextWrapping="Wrap"
-                                           Text="Клиентское приложение для работы с товарами, остатками и отчетами." />
+                                <TextBlock FontSize="14" FontWeight="SemiBold" Foreground="#AFC3E8" Text="Панель склада" />
+                                <TextBlock Margin="0,8,0,0" FontSize="26" FontWeight="Black" Foreground="White" TextWrapping="Wrap" Text="Warehouse Inventory Desktop" />
+                                <TextBlock Margin="0,8,0,0" FontSize="13" Foreground="#C2D0EB" TextWrapping="Wrap" Text="Клиентское приложение для работы с товарами, остатками и отчетами." />
                             </StackPanel>
                         </Border>
 
-                        <Border Margin="0,24,0,22"
-                                Padding="18"
-                                CornerRadius="24"
-                                Background="#17FFFFFF"
-                                BorderBrush="#24FFFFFF"
-                                BorderThickness="1">
+                        <Border Margin="0,24,0,22" Padding="18" CornerRadius="24" Background="#17FFFFFF" BorderBrush="#24FFFFFF" BorderThickness="1">
                             <StackPanel>
-                                <TextBlock FontSize="12"
-                                           Foreground="#A9BDE1"
-                                           Text="Текущий пользователь" />
-                                <TextBlock Margin="0,8,0,0"
-                                           FontSize="22"
-                                           FontWeight="Bold"
-                                           Foreground="White"
-                                           Text="{Binding CurrentUserName}" />
-                                <Border Margin="0,14,0,0"
-                                        Padding="12,8"
-                                        CornerRadius="16"
-                                        Background="#1D2235">
+                                <TextBlock FontSize="12" Foreground="#A9BDE1" Text="Текущий пользователь" />
+                                <TextBlock Margin="0,8,0,0" FontSize="22" FontWeight="Bold" Foreground="White" Text="{Binding CurrentUserName}" />
+                                <Border Margin="0,14,0,0" Padding="12,8" CornerRadius="16" Background="#1D2235">
                                     <StackPanel>
-                                        <TextBlock FontSize="11"
-                                                   Foreground="#93A9D1"
-                                                   Text="Режим доступа" />
-                                        <TextBlock Margin="0,4,0,0"
-                                                   FontSize="13"
-                                                   FontWeight="SemiBold"
-                                                   Foreground="#E8F0FF"
-                                                   TextWrapping="Wrap"
-                                                   Text="{Binding SessionModeDescription}" />
+                                        <TextBlock FontSize="11" Foreground="#93A9D1" Text="Режим доступа" />
+                                        <TextBlock Margin="0,4,0,0" FontSize="13" FontWeight="SemiBold" Foreground="#E8F0FF" TextWrapping="Wrap" Text="{Binding SessionModeDescription}" />
                                     </StackPanel>
                                 </Border>
                             </StackPanel>
                         </Border>
 
                         <StackPanel>
-                            <TextBlock Margin="6,0,0,16"
-                                       FontSize="12"
-                                       FontWeight="SemiBold"
-                                       Foreground="#8EA3C9"
-                                       Text="Основные разделы" />
+                            <TextBlock Margin="6,0,0,16" FontSize="12" FontWeight="SemiBold" Foreground="#8EA3C9" Text="Основные разделы" />
 
-                            <Button Command="{Binding OpenOverviewCommand}"
-                                    Content="Обзор">
+                            <Button Command="{Binding OpenOverviewCommand}" Content="Обзор">
                                 <Button.Style>
                                     <Style TargetType="Button" BasedOn="{StaticResource SidebarButtonStyle}">
                                         <Style.Triggers>
@@ -219,8 +162,7 @@
                                 </Button.Style>
                             </Button>
 
-                            <Button Command="{Binding OpenProductsCommand}"
-                                    Content="Товары">
+                            <Button Command="{Binding OpenProductsCommand}" Content="Товары">
                                 <Button.Style>
                                     <Style TargetType="Button" BasedOn="{StaticResource SidebarButtonStyle}">
                                         <Style.Triggers>
@@ -232,8 +174,7 @@
                                 </Button.Style>
                             </Button>
 
-                            <Button Command="{Binding OpenReportsCommand}"
-                                    Content="Отчеты">
+                            <Button Command="{Binding OpenReportsCommand}" Content="Отчеты">
                                 <Button.Style>
                                     <Style TargetType="Button" BasedOn="{StaticResource SidebarButtonStyle}">
                                         <Style.Triggers>
@@ -245,24 +186,19 @@
                                 </Button.Style>
                             </Button>
 
-                            <Button Command="{Binding OpenInventoryCommand}"
-                                    Content="Остатки">
+                            <Button Command="{Binding OpenInventoryCommand}" Content="Остатки">
                                 <Button.Style>
                                     <Style TargetType="Button" BasedOn="{StaticResource SidebarButtonStyle}">
                                         <Style.Triggers>
                                             <DataTrigger Binding="{Binding IsInventorySection}" Value="True">
                                                 <Setter Property="Background" Value="#26FFFFFF" />
                                             </DataTrigger>
-                                            <DataTrigger Binding="{Binding IsOperator}" Value="False">
-                                                <Setter Property="Visibility" Value="Collapsed" />
-                                            </DataTrigger>
                                         </Style.Triggers>
                                     </Style>
                                 </Button.Style>
                             </Button>
 
-                            <Button Command="{Binding OpenProfileCommand}"
-                                    Content="Профиль">
+                            <Button Command="{Binding OpenProfileCommand}" Content="Профиль">
                                 <Button.Style>
                                     <Style TargetType="Button" BasedOn="{StaticResource SidebarButtonStyle}">
                                         <Style.Triggers>
@@ -275,28 +211,11 @@
                             </Button>
                         </StackPanel>
 
-                        <Border Margin="0,18,0,0"
-                                Padding="18"
-                                CornerRadius="24"
-                                Background="#15FFFFFF"
-                                BorderBrush="#24FFFFFF"
-                                BorderThickness="1">
+                        <Border Margin="0,18,0,0" Padding="18" CornerRadius="24" Background="#15FFFFFF" BorderBrush="#24FFFFFF" BorderThickness="1">
                             <StackPanel>
-                                <TextBlock FontSize="12"
-                                           Foreground="#A8BCE0"
-                                           Text="Сессия" />
-                                <TextBlock Margin="0,6,0,0"
-                                           FontSize="13"
-                                           Foreground="#E3ECFF"
-                                           TextWrapping="Wrap"
-                                           Text="Все изменения в desktop-версии можно переносить по папкам-коммитам по порядку." />
-                                <Button Margin="0,18,0,0"
-                                        Height="46"
-                                        Background="#FFCC00"
-                                        Foreground="#20283D"
-                                        FontWeight="Bold"
-                                        Command="{Binding LogoutCommand}"
-                                        Content="Выйти" />
+                                <TextBlock FontSize="12" Foreground="#A8BCE0" Text="Сессия" />
+                                <TextBlock Margin="0,6,0,0" FontSize="13" Foreground="#E3ECFF" TextWrapping="Wrap" Text="Все изменения в desktop-версии можно переносить по папкам-коммитам по порядку." />
+                                <Button Margin="0,18,0,0" Height="46" Background="#FFCC00" Foreground="#20283D" FontWeight="Bold" Command="{Binding LogoutCommand}" Content="Выйти" />
                             </StackPanel>
                         </Border>
                     </StackPanel>
@@ -304,17 +223,11 @@
             </Grid>
         </Border>
 
-        <Border Grid.Column="1"
-                Margin="24,22,22,22"
-                CornerRadius="32"
-                Background="#F8F9FC">
+        <Border Grid.Column="1" Margin="24,22,22,22" CornerRadius="32" Background="#F8F9FC">
             <Border.Effect>
-                <DropShadowEffect BlurRadius="22"
-                                  ShadowDepth="0"
-                                  Opacity="0.08" />
+                <DropShadowEffect BlurRadius="22" ShadowDepth="0" Opacity="0.08" />
             </Border.Effect>
-            <ContentControl Margin="0,14,0,0"
-                            Content="{Binding CurrentSectionView}" />
+            <ContentControl Margin="0,14,0,0" Content="{Binding CurrentSectionView}" />
         </Border>
     </Grid>
 </Window>

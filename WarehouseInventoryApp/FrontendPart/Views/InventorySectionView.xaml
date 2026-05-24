@@ -1,0 +1,96 @@
+<UserControl x:Class="WarehouseInventory.Desktop.Views.InventorySectionView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d"
+             d:DesignHeight="760"
+             d:DesignWidth="1040">
+    <Grid Margin="30">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+
+        <StackPanel>
+            <TextBlock FontSize="32" FontWeight="Bold" Text="{Binding Header}" />
+            <TextBlock Margin="0,8,0,0" FontSize="15" Foreground="#667085" Text="{Binding Description}" />
+        </StackPanel>
+
+        <Border Grid.Row="1" Margin="0,22,0,0" Padding="16" CornerRadius="18" Background="#FFFFFF">
+            <WrapPanel>
+                <TextBlock Margin="0,0,24,8" Foreground="#3756CE" Text="1. Откройте экран инвентаризации" />
+                <TextBlock Margin="0,0,24,8" Foreground="#3756CE" Text="2. Сканируйте товар или выберите из списка" />
+                <TextBlock Margin="0,0,24,8" Foreground="#3756CE" Text="3. Введите факт и нажмите Проверить" />
+                <TextBlock Margin="0,0,24,8" Foreground="#3756CE" Text="4. После проверки всех позиций нажмите Сохранить" />
+            </WrapPanel>
+        </Border>
+
+        <Border Grid.Row="2" Margin="0,18,0,0" Padding="18" CornerRadius="18" Background="#FFFFFF">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="1.2*" />
+                    <ColumnDefinition Width="1.4*" />
+                    <ColumnDefinition Width="170" />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+
+                <TextBox Grid.Column="0"
+                         Height="40"
+                         VerticalContentAlignment="Center"
+                         Text="{Binding ScanSku, UpdateSourceTrigger=PropertyChanged}" />
+                <ComboBox Grid.Column="1"
+                          Margin="12,0,0,0"
+                          Height="40"
+                          ItemsSource="{Binding Products}"
+                          SelectedItem="{Binding SelectedProduct, Mode=TwoWay}"
+                          DisplayMemberPath="Name" />
+                <TextBox Grid.Column="2"
+                         Margin="12,0,0,0"
+                         Height="40"
+                         VerticalContentAlignment="Center"
+                         Text="{Binding ActualQuantityInput, UpdateSourceTrigger=PropertyChanged}" />
+                <StackPanel Grid.Column="3" Margin="12,0,0,0" Orientation="Horizontal">
+                    <Button Padding="16,8" Margin="0,0,10,0" Command="{Binding FindBySkuCommand}" Content="Найти" />
+                    <Button Padding="16,8" Background="#FFCC00" BorderThickness="0" Command="{Binding SavePositionCommand}" Content="Проверить" />
+                </StackPanel>
+            </Grid>
+        </Border>
+
+        <Grid Grid.Row="3" Margin="0,20,0,0">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="*" />
+                <RowDefinition Height="Auto" />
+            </Grid.RowDefinitions>
+
+            <DataGrid AutoGenerateColumns="False"
+                      CanUserAddRows="False"
+                      ItemsSource="{Binding Checks}"
+                      BorderThickness="0"
+                      RowBackground="#FFFFFF"
+                      AlternatingRowBackground="#F7F9FD">
+                <DataGrid.Columns>
+                    <DataGridTextColumn Header="Товар" Width="2*" Binding="{Binding ProductName}" />
+                    <DataGridTextColumn Header="SKU" Width="1*" Binding="{Binding Sku}" />
+                    <DataGridTextColumn Header="Ожидалось" Width="1*" Binding="{Binding ExpectedQuantity}" />
+                    <DataGridTextColumn Header="Факт" Width="1*" Binding="{Binding ActualQuantity}" />
+                    <DataGridTextColumn Header="Статус" Width="1.4*" Binding="{Binding StatusText, Mode=OneWay}" />
+                </DataGrid.Columns>
+            </DataGrid>
+
+            <StackPanel Grid.Row="1" Margin="0,14,0,0">
+                <TextBlock Foreground="#3756CE" Text="{Binding StatusMessage}" />
+                <Button Margin="0,12,0,0"
+                        Width="180"
+                        Height="40"
+                        HorizontalAlignment="Left"
+                        Background="#FFCC00"
+                        BorderThickness="0"
+                        Command="{Binding SaveInventoryCommand}"
+                        Content="Сохранить" />
+            </StackPanel>
+        </Grid>
+    </Grid>
+</UserControl>

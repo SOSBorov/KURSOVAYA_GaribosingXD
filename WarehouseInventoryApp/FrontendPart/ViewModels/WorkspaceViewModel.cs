@@ -18,20 +18,13 @@ public sealed class WorkspaceViewModel : ViewModelBase
         _state = state;
         _logout = logout;
 
-        if (section == WorkspaceSection.Inventory && _state.IsAdmin)
-        {
-            section = WorkspaceSection.Overview;
-        }
-
         _currentSection = section;
         _currentSectionView = CreateSectionViewModel(section);
 
         OpenOverviewCommand = new RelayCommand(() => NavigateTo(WorkspaceSection.Overview));
         OpenProductsCommand = new RelayCommand(() => NavigateTo(WorkspaceSection.Products));
         OpenReportsCommand = new RelayCommand(() => NavigateTo(WorkspaceSection.Reports));
-        OpenInventoryCommand = new RelayCommand(
-            () => NavigateTo(WorkspaceSection.Inventory),
-            () => IsOperator);
+        OpenInventoryCommand = new RelayCommand(() => NavigateTo(WorkspaceSection.Inventory));
         OpenProfileCommand = new RelayCommand(() => NavigateTo(WorkspaceSection.Profile));
         LogoutCommand = new RelayCommand(_logout);
     }
